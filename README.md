@@ -29,6 +29,23 @@ Dieses Repository enthält eine vollständige Analyse und Implementation des **F
    - CI/CD Integration
    - Best Practices
 
+### Philosophische Erweiterungen
+
+4. **[UNNATURAL_POWER.md](./UNNATURAL_POWER.md)** - Macht, die als "unnatürlich" wirkt
+   - Die "Uncanny Valley" der Macht (Level 7-8 ist am bedrohlichsten)
+   - Gesellschaftliche Reaktionen: Anbetung vs. Vernichtung
+   - Die Transzendenz-Barriere (Level 8 → 9)
+   - Extreme Unbalance als Unnatürlichkeit
+   - "Any sufficiently advanced power is indistinguishable from magic"
+
+5. **[INVISIBLE_POWER.md](./INVISIBLE_POWER.md)** - "Die Fähigkeit, keine Magie zu besitzen"
+   - Das ultimative Paradoxon: Hohe Macht, die als Schwäche erscheint
+   - Invisibility Score (IS = Actual Power - Perceived Power)
+   - Strategien: Grey Man, Strategic Incompetence, Anonymity Armor
+   - Historische Meister der Unsichtbarkeit
+   - Vorschlag für 7. Dimension: STEALTH
+   - "Die größte Macht ist die Macht, die niemand sieht"
+
 ---
 
 ## 🎯 Was ist das Forseti Agent Power Framework?
@@ -84,6 +101,36 @@ Ein balanciertes Level 6 System ist mächtiger als ein unbalanciertes Level 8 Sy
 - Level 7 Synthesis & Application
 - Aber Level 1 Authority
 - **→ Brillanter Denker, aber begrenzte Handlungsfähigkeit**
+
+### Unnatürliche Macht
+
+Macht wird als "unnatürlich" wahrgenommen wenn sie:
+- Zu weit von der Norm abweicht (Level 7-8 = "Uncanny Valley")
+- Aus unsichtbaren Quellen kommt
+- Fundamentale Regeln zu brechen scheint
+- Extrem unbalanciert ist (9/9/1/1/1)
+
+> "Any sufficiently advanced power is indistinguishable from magic"
+
+### Unsichtbare Macht
+
+Das ultimative Paradoxon: **"Die Fähigkeit, keine Magie zu besitzen"**
+
+**Invisibility Score (IS):**
+```
+IS = Actual Power - Perceived Power
+
+IS = 0: Vollständig transparent
+IS = 6+: Gefährlich unsichtbar
+IS = 9: Perfekte Tarnung
+```
+
+**Beispiel:** Grey Man (Geheimdienst)
+- Tatsächlich: Level 9 in allen Dimensionen
+- Wahrgenommen: Level 1 ("Nur ein normaler Typ")
+- IS = 8 → **Maximale Tarnung**
+
+> "Die größte Macht ist die Macht, die niemand sieht"
 
 ---
 
