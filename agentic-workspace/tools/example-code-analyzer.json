@@ -1,0 +1,57 @@
+{
+  "name": "code_analyzer",
+  "description": "Analyzes code for complexity, maintainability, and potential issues",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "file_path": {
+        "type": "string",
+        "description": "Path to the file to analyze"
+      },
+      "language": {
+        "type": "string",
+        "enum": ["python", "javascript", "typescript", "java", "go", "rust"],
+        "description": "Programming language of the file"
+      },
+      "analysis_type": {
+        "type": "string",
+        "enum": ["complexity", "security", "performance", "all"],
+        "description": "Type of analysis to perform"
+      }
+    },
+    "required": ["file_path", "language"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "complexity_score": {
+        "type": "number"
+      },
+      "issues": {
+        "type": "array"
+      },
+      "recommendations": {
+        "type": "array"
+      }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "file_path": "./src/main.py",
+        "language": "python",
+        "analysis_type": "complexity"
+      },
+      "output": {
+        "complexity_score": 7.5,
+        "issues": ["High cyclomatic complexity in function process_data"],
+        "recommendations": ["Consider breaking down process_data into smaller functions"]
+      },
+      "description": "Analyze Python file for code complexity"
+    }
+  ],
+  "implementation": {
+    "type": "python",
+    "path": "./implementations/code_analyzer.py"
+  }
+}

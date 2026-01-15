@@ -1,0 +1,31 @@
+{
+  "name": "task-executor-001",
+  "type": "task-executor",
+  "version": "1.0.0",
+  "description": "General purpose task execution agent capable of running code, executing bash commands, and managing files",
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-sonnet-4-5",
+    "temperature": 0.7,
+    "max_tokens": 4096
+  },
+  "tools": [
+    "bash",
+    "read",
+    "write",
+    "edit",
+    "glob",
+    "grep"
+  ],
+  "capabilities": [
+    "code-execution",
+    "file-management",
+    "command-execution",
+    "text-processing"
+  ],
+  "config": {
+    "max_retries": 3,
+    "timeout_seconds": 300,
+    "working_directory": "./workspace"
+  }
+}

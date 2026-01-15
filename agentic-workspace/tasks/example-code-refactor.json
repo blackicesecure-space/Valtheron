@@ -1,0 +1,50 @@
+{
+  "name": "refactor-legacy-module",
+  "type": "code-generation",
+  "description": "Refactor legacy code module to improve maintainability, add type hints, and modernize patterns",
+  "priority": "medium",
+  "estimated_duration": "2h",
+  "inputs": {
+    "module_path": {
+      "type": "string",
+      "description": "Path to the module to refactor"
+    },
+    "target_standards": {
+      "type": "array",
+      "description": "Coding standards to apply (e.g., PEP8, type hints)",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "outputs": {
+    "refactored_code": {
+      "type": "string",
+      "description": "Path to refactored module"
+    },
+    "changes_summary": {
+      "type": "object",
+      "description": "Summary of changes made"
+    }
+  },
+  "agent": "task-executor-001",
+  "tools_required": [
+    "read",
+    "write",
+    "edit",
+    "code_analyzer"
+  ],
+  "success_criteria": [
+    "All existing tests pass",
+    "Code complexity reduced by at least 20%",
+    "Type hints added to all functions",
+    "No new linting errors introduced",
+    "Documentation updated"
+  ],
+  "validation": {
+    "method": "automated",
+    "script": "./tests/validate_refactor.py"
+  },
+  "dependencies": [],
+  "tags": ["refactoring", "code-quality", "maintenance"]
+}

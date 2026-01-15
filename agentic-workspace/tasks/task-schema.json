@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Schema",
+  "description": "Schema for defining individual tasks",
+  "type": "object",
+  "required": ["name", "type", "description"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Unique task identifier"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "data-processing",
+        "code-generation",
+        "analysis",
+        "testing",
+        "documentation",
+        "deployment",
+        "monitoring"
+      ],
+      "description": "Category of task"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed task description"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"],
+      "description": "Task priority level"
+    },
+    "estimated_duration": {
+      "type": "string",
+      "description": "Estimated time to complete (e.g., '5m', '1h', '2d')"
+    },
+    "inputs": {
+      "type": "object",
+      "description": "Required task inputs with types and descriptions"
+    },
+    "outputs": {
+      "type": "object",
+      "description": "Expected task outputs"
+    },
+    "agent": {
+      "type": "string",
+      "description": "Preferred agent for this task"
+    },
+    "tools_required": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tools needed to complete this task"
+    },
+    "success_criteria": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Conditions that define successful completion"
+    },
+    "validation": {
+      "type": "object",
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": ["automated", "manual", "hybrid"]
+        },
+        "script": {
+          "type": "string",
+          "description": "Path to validation script"
+        }
+      }
+    },
+    "dependencies": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Other tasks that must complete first"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags for categorization and search"
+    }
+  }
+}
