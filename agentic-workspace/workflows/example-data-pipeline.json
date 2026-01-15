@@ -1,0 +1,88 @@
+{
+  "name": "data-processing-pipeline",
+  "version": "1.0.0",
+  "description": "End-to-end data processing pipeline with validation, transformation, and analysis",
+  "inputs": {
+    "input_file": {
+      "type": "string",
+      "description": "Path to input data file"
+    },
+    "output_dir": {
+      "type": "string",
+      "description": "Directory for output files"
+    }
+  },
+  "outputs": {
+    "processed_data": {
+      "type": "string",
+      "description": "Path to processed data file"
+    },
+    "analysis_report": {
+      "type": "object",
+      "description": "Data analysis results"
+    }
+  },
+  "steps": [
+    {
+      "name": "validate-input",
+      "agent": "task-executor-001",
+      "action": "validate_data",
+      "params": {
+        "file_path": "${inputs.input_file}",
+        "schema": "data_schema.json"
+      },
+      "retry": {
+        "max_attempts": 1,
+        "backoff": "linear"
+      }
+    },
+    {
+      "name": "clean-data",
+      "agent": "task-executor-001",
+      "action": "clean_data",
+      "params": {
+        "input": "${inputs.input_file}",
+        "operations": ["remove_duplicates", "handle_missing", "normalize"]
+      },
+      "depends_on": ["validate-input"]
+    },
+    {
+      "name": "transform-data",
+      "agent": "task-executor-001",
+      "action": "transform_data",
+      "params": {
+        "input": "${steps.clean-data.output.file}",
+        "transformations": ["aggregate", "pivot", "enrich"]
+      },
+      "depends_on": ["clean-data"]
+    },
+    {
+      "name": "analyze-patterns",
+      "agent": "researcher-001",
+      "action": "analyze_patterns",
+      "params": {
+        "data": "${steps.transform-data.output.file}",
+        "methods": ["statistical", "trend", "anomaly"]
+      },
+      "depends_on": ["transform-data"]
+    },
+    {
+      "name": "generate-report",
+      "agent": "researcher-001",
+      "action": "generate_report",
+      "params": {
+        "analysis": "${steps.analyze-patterns.output}",
+        "output_path": "${inputs.output_dir}/report.json"
+      },
+      "depends_on": ["analyze-patterns"]
+    }
+  ],
+  "error_handling": {
+    "strategy": "fail-fast",
+    "notification": {
+      "on_failure": true,
+      "on_success": false
+    }
+  },
+  "parallel": false
+}

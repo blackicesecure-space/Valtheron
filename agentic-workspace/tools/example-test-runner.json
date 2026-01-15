@@ -1,0 +1,82 @@
+{
+  "name": "test_runner",
+  "description": "Executes tests for a project and returns results",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "test_path": {
+        "type": "string",
+        "description": "Path to test file or directory"
+      },
+      "framework": {
+        "type": "string",
+        "enum": ["pytest", "jest", "mocha", "junit", "go-test"],
+        "description": "Testing framework to use"
+      },
+      "options": {
+        "type": "object",
+        "properties": {
+          "verbose": {
+            "type": "boolean"
+          },
+          "coverage": {
+            "type": "boolean"
+          },
+          "parallel": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "required": ["test_path", "framework"]
+  },
+  "returns": {
+    "type": "object",
+    "properties": {
+      "status": {
+        "type": "string",
+        "enum": ["passed", "failed", "error"]
+      },
+      "total_tests": {
+        "type": "integer"
+      },
+      "passed": {
+        "type": "integer"
+      },
+      "failed": {
+        "type": "integer"
+      },
+      "coverage": {
+        "type": "number"
+      },
+      "failures": {
+        "type": "array"
+      }
+    }
+  },
+  "examples": [
+    {
+      "input": {
+        "test_path": "./tests",
+        "framework": "pytest",
+        "options": {
+          "verbose": true,
+          "coverage": true
+        }
+      },
+      "output": {
+        "status": "passed",
+        "total_tests": 45,
+        "passed": 45,
+        "failed": 0,
+        "coverage": 87.5,
+        "failures": []
+      },
+      "description": "Run pytest with coverage"
+    }
+  ],
+  "implementation": {
+    "type": "bash",
+    "path": "./implementations/test_runner.sh"
+  }
+}

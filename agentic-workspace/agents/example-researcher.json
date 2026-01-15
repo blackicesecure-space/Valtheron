@@ -1,0 +1,30 @@
+{
+  "name": "researcher-001",
+  "type": "researcher",
+  "version": "1.0.0",
+  "description": "Research agent specialized in gathering information, analyzing codebases, and synthesizing findings",
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-opus-4-5",
+    "temperature": 0.5,
+    "max_tokens": 8192
+  },
+  "tools": [
+    "read",
+    "glob",
+    "grep",
+    "web-search",
+    "web-fetch"
+  ],
+  "capabilities": [
+    "codebase-analysis",
+    "documentation-research",
+    "information-gathering",
+    "pattern-recognition"
+  ],
+  "config": {
+    "search_depth": "thorough",
+    "cache_results": true,
+    "max_files_to_read": 100
+  }
+}
