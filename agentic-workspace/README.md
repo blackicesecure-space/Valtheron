@@ -22,31 +22,6 @@ agentic-workspace/
 └── tests/            # Test suites
 ```
 
-## Dashboard
-
-This workspace includes a **Real-Time Monitoring Dashboard** for visualizing agent execution, workflows, and logs.
-
-### Features
-- Live log streaming via WebSocket
-- Overview of all agents, workflows, tasks, and tools
-- Log filtering and search
-- Real-time statistics
-
-### Quick Start
-
-```bash
-# Install dependencies
-npm install
-cd ui && npm install && cd ..
-
-# Start dashboard (development mode)
-npm run dev
-
-# Access at http://localhost:5173
-```
-
-For detailed dashboard documentation, see [DASHBOARD.md](./DASHBOARD.md).
-
 ## Quick Start
 
 ### 1. Define an Agent
