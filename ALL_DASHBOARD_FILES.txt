@@ -1,0 +1,32 @@
+================================================================================
+AGENTIC WORKSPACE DASHBOARD - VOLLSTÄNDIGE DATEILISTE
+================================================================================
+
+Diese Datei enthält ALLE Dateien zum manuellen Erstellen des Dashboards.
+
+SCHNELLSTART:
+1. Erstellen Sie folgende Verzeichnisstruktur:
+   agentic-workspace/
+   ├── server/api/
+   ├── server/websocket/
+   ├── server/middleware/
+   ├── ui/src/components/
+   ├── ui/src/hooks/
+   ├── ui/src/services/
+   ├── ui/src/styles/
+   ├── logs/
+   ├── agents/
+   ├── workflows/
+   ├── tasks/
+   └── tools/
+
+2. Kopieren Sie die unten aufgeführten Dateiinhalte
+3. Führen Sie aus:
+   npm install
+   cd ui && npm install && cd ..
+   npm run dev
+
+================================================================================
+DATEI-LISTE
+================================================================================
+
