@@ -1,0 +1,73 @@
+{
+  "name": "automated-code-review",
+  "version": "1.0.0",
+  "description": "Automated code review workflow that analyzes code quality, security, and performance",
+  "inputs": {
+    "repository_path": {
+      "type": "string",
+      "description": "Path to the repository to review"
+    },
+    "files": {
+      "type": "array",
+      "description": "List of files to review (optional, defaults to all changed files)"
+    }
+  },
+  "outputs": {
+    "review_summary": {
+      "type": "object",
+      "description": "Summary of code review findings"
+    },
+    "issues": {
+      "type": "array",
+      "description": "List of issues found"
+    }
+  },
+  "steps": [
+    {
+      "name": "find-files",
+      "agent": "task-executor-001",
+      "action": "find_changed_files",
+      "params": {
+        "repository_path": "${inputs.repository_path}"
+      }
+    },
+    {
+      "name": "analyze-code",
+      "agent": "researcher-001",
+      "action": "analyze_code",
+      "params": {
+        "files": "${steps.find-files.output.files}",
+        "analysis_types": ["complexity", "security", "performance"]
+      },
+      "depends_on": ["find-files"]
+    },
+    {
+      "name": "check-tests",
+      "agent": "task-executor-001",
+      "action": "run_tests",
+      "params": {
+        "test_path": "${inputs.repository_path}/tests"
+      },
+      "depends_on": ["find-files"],
+      "on_failure": "continue"
+    },
+    {
+      "name": "generate-review",
+      "agent": "researcher-001",
+      "action": "generate_review_summary",
+      "params": {
+        "analysis_results": "${steps.analyze-code.output}",
+        "test_results": "${steps.check-tests.output}"
+      },
+      "depends_on": ["analyze-code", "check-tests"]
+    }
+  ],
+  "error_handling": {
+    "strategy": "partial-success",
+    "notification": {
+      "on_failure": true,
+      "on_success": true
+    }
+  },
+  "parallel": true
+}

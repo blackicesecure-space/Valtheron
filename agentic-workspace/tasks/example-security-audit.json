@@ -1,0 +1,54 @@
+{
+  "name": "security-vulnerability-scan",
+  "type": "analysis",
+  "description": "Perform comprehensive security audit to identify vulnerabilities, insecure patterns, and compliance issues",
+  "priority": "high",
+  "estimated_duration": "1h",
+  "inputs": {
+    "codebase_path": {
+      "type": "string",
+      "description": "Path to codebase to audit"
+    },
+    "scan_types": {
+      "type": "array",
+      "description": "Types of security scans to perform",
+      "items": {
+        "type": "string",
+        "enum": ["dependency", "static-analysis", "secrets", "permissions"]
+      }
+    }
+  },
+  "outputs": {
+    "vulnerabilities": {
+      "type": "array",
+      "description": "List of identified vulnerabilities with severity"
+    },
+    "report": {
+      "type": "string",
+      "description": "Path to detailed security report"
+    },
+    "recommendations": {
+      "type": "array",
+      "description": "Remediation recommendations"
+    }
+  },
+  "agent": "researcher-001",
+  "tools_required": [
+    "read",
+    "grep",
+    "glob",
+    "bash"
+  ],
+  "success_criteria": [
+    "All files scanned successfully",
+    "Vulnerabilities categorized by severity",
+    "Actionable recommendations provided",
+    "Report generated in required format"
+  ],
+  "validation": {
+    "method": "manual",
+    "script": null
+  },
+  "dependencies": [],
+  "tags": ["security", "audit", "compliance", "vulnerability"]
+}

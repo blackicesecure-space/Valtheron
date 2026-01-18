@@ -1,0 +1,77 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Tool Definition Schema",
+  "description": "Schema for defining custom tools that agents can use",
+  "type": "object",
+  "required": ["name", "description", "parameters"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*$",
+      "description": "Tool name in snake_case"
+    },
+    "description": {
+      "type": "string",
+      "description": "Clear description of what the tool does"
+    },
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "const": "object"
+        },
+        "properties": {
+          "type": "object",
+          "description": "Parameter definitions"
+        },
+        "required": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of required parameter names"
+        }
+      },
+      "required": ["type", "properties"]
+    },
+    "returns": {
+      "type": "object",
+      "description": "Description of what the tool returns"
+    },
+    "examples": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "input": {
+            "type": "object"
+          },
+          "output": {
+            "type": "object"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "implementation": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["python", "javascript", "bash", "api"]
+        },
+        "path": {
+          "type": "string",
+          "description": "Path to implementation file"
+        },
+        "endpoint": {
+          "type": "string",
+          "description": "API endpoint if type is 'api'"
+        }
+      }
+    }
+  }
+}
