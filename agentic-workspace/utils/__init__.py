@@ -1,137 +1,124 @@
 """
-Agentic Workspace Utilities Package.
-Provides core utilities for agent operations, workflows, and orchestration.
+Agentic Workspace Utilities.
+
+This package provides the core infrastructure for the agentic workspace:
+- Configuration loading and validation
+- Structured logging with metrics
+- Workflow engine with dependency management
+- Agent orchestration and coordination
 """
 from .config_loader import ConfigLoader
-from .logger import AgenticLogger
+from .logger import AgenticLogger, get_logger, MetricsCollector
 from .workflow_engine import (
     WorkflowEngine,
     WorkflowResult,
     WorkflowStatus,
     StepResult,
-    ErrorStrategy,
+    StepStatus,
     VariableResolver,
-    DependencyGraph,
-    execute_workflow_async
+    DependencyResolver,
+    load_workflow,
 )
 from .agent_orchestrator import (
     AgentOrchestrator,
     BaseAgent,
     TaskExecutorAgent,
     ResearcherAgent,
-    PlannerAgent,
-    ReviewerAgent,
-    AgentRegistry,
+    AgentFactory,
     AgentConfig,
-    AgentTask,
-    AgentStatus,
-    TaskPriority,
-    AgentCapability
+    AgentState,
+    TaskContext,
+    TaskResult,
 )
 
 __all__ = [
-    # Config and logging
+    # Config
     "ConfigLoader",
-    "AgenticLogger",
     
-    # Workflow engine
+    # Logging
+    "AgenticLogger",
+    "get_logger",
+    "MetricsCollector",
+    
+    # Workflow
     "WorkflowEngine",
     "WorkflowResult",
     "WorkflowStatus",
     "StepResult",
-    "ErrorStrategy",
+    "StepStatus",
     "VariableResolver",
-    "DependencyGraph",
-    "execute_workflow_async",
+    "DependencyResolver",
+    "load_workflow",
     
-    # Agent orchestration
+    # Agents
     "AgentOrchestrator",
     "BaseAgent",
     "TaskExecutorAgent",
     "ResearcherAgent",
-    "PlannerAgent",
-    "ReviewerAgent",
-    "AgentRegistry",
+    "AgentFactory",
     "AgentConfig",
-    "AgentTask",
-    "AgentStatus",
-    "TaskPriority",
-    "AgentCapability",
+    "AgentState",
+    "TaskContext",
+    "TaskResult",
 ]
 
 
-def create_workspace(
-    agents_dir: str = "./agents",
-    tools_dir: str = "./tools",
-    config_path: str = "./config/workspace.json"
-) -> "AgentOrchestrator":
+def create_workspace(workspace_dir: str = ".") -> dict:
     """
-    Create a fully configured workspace with agents and tools.
+    Initialize and return a complete workspace setup.
     
     Args:
-        agents_dir: Path to agent configurations
-        tools_dir: Path to tool definitions
-        config_path: Path to workspace configuration
+        workspace_dir: Root directory of the workspace
         
     Returns:
-        Configured AgentOrchestrator instance
+        Dictionary containing initialized components
     """
     from pathlib import Path
+    import sys
     
-    # Load workspace config
-    config = ConfigLoader.load_json(config_path)
+    # Add tools to path
+    tools_path = Path(workspace_dir) / "tools" / "implementations"
+    if str(tools_path) not in sys.path:
+        sys.path.insert(0, str(tools_path))
+    
+    # Load configuration
+    config = ConfigLoader.load_workspace_config(workspace_dir)
     
     # Initialize logger
-    log_dir = config.get("paths", {}).get("logs", "./logs")
-    logger = AgenticLogger(log_dir=log_dir)
+    log_dir = Path(workspace_dir) / config.get("paths", {}).get("logs", "./logs")
+    logger = get_logger(str(log_dir))
     
-    # Load tools
-    tools = _load_tools(tools_dir)
+    # Import and get tool registry
+    try:
+        from tools.implementations import get_registry
+        tool_registry = get_registry()
+    except ImportError:
+        tool_registry = None
     
-    # Create orchestrator
+    # Initialize orchestrator
     orchestrator = AgentOrchestrator(
-        agents_dir=agents_dir,
-        tools=tools,
-        logger=logger,
         max_concurrent_tasks=config.get("execution", {}).get("parallel_max_workers", 4)
     )
     
-    # Load agents
-    orchestrator.load_agents()
+    if tool_registry:
+        orchestrator.set_tool_registry(tool_registry)
     
-    return orchestrator
-
-
-def _load_tools(tools_dir: str) -> dict:
-    """Load tool implementations."""
-    tools = {}
+    # Initialize workflow engine
+    def agent_executor(agent_name: str, action: str, params: dict):
+        result = orchestrator.execute_task(agent_name, action, params)
+        if result.status == "success":
+            return result.output
+        raise RuntimeError(result.error or "Task execution failed")
     
-    try:
-        from tools.implementations import (
-            CodeAnalyzerTool,
-            TestRunnerTool,
-            FileReadTool,
-            FileWriteTool,
-            FileSearchTool,
-            GrepTool,
-            FileEditTool
-        )
-        
-        # Instantiate tools
-        tool_instances = [
-            CodeAnalyzerTool(),
-            TestRunnerTool(),
-            FileReadTool(),
-            FileWriteTool(),
-            FileSearchTool(),
-            GrepTool(),
-            FileEditTool()
-        ]
-        
-        for tool in tool_instances:
-            tools[tool.name] = tool
-            
-    except ImportError:
-        pass
+    workflow_engine = WorkflowEngine(
+        agent_executor=agent_executor,
+        max_workers=config.get("execution", {}).get("parallel_max_workers", 4)
+    )
     
-    return tools
+    return {
+        "config": config,
+        "logger": logger,
+        "tool_registry": tool_registry,
+        "orchestrator": orchestrator,
+        "workflow_engine": workflow_engine,
+    }

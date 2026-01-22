@@ -1,6 +1,6 @@
 {
   "workspace": {
-    "name": "agentic-workspace",
+    "name": "valtheron-agentic-workspace",
     "version": "1.0.0",
     "description": "Comprehensive workspace for AI agent development and deployment"
   },
@@ -11,11 +11,12 @@
     "tasks": "./tasks",
     "data": "./data",
     "logs": "./logs",
-    "cache": "./data/cache"
+    "cache": "./data/cache",
+    "implementations": "./tools/implementations"
   },
   "defaults": {
     "model_provider": "anthropic",
-    "model_name": "claude-sonnet-4-5",
+    "model_name": "claude-sonnet-4-5-20250929",
     "temperature": 0.7,
     "max_tokens": 4096,
     "timeout_seconds": 300,
@@ -34,20 +35,36 @@
     "parallel_max_workers": 4,
     "enable_caching": true,
     "cache_ttl_seconds": 3600,
-    "auto_cleanup": true
+    "auto_cleanup": true,
+    "default_workflow_strategy": "parallel"
   },
   "security": {
     "validate_inputs": true,
     "sanitize_outputs": true,
     "require_agent_auth": false,
-    "allowed_tools": "*"
+    "allowed_tools": "*",
+    "blocked_commands": [
+      "rm -rf /",
+      "mkfs",
+      "dd if=/dev/zero"
+    ],
+    "file_access": {
+      "allowed_paths": ["./data", "./workspace", "./logs"],
+      "denied_paths": ["/etc", "/root", "~/.ssh"]
+    }
   },
   "monitoring": {
     "enabled": true,
-    "metrics": ["execution_time", "success_rate", "error_rate"],
+    "metrics": ["execution_time", "success_rate", "error_rate", "tool_usage"],
     "alerts": {
       "on_failure": false,
-      "on_slow_execution": false
+      "on_slow_execution": false,
+      "slow_threshold_ms": 30000
     }
+  },
+  "agents": {
+    "default_type": "task-executor",
+    "auto_register_from": "./agents",
+    "initialization_timeout_seconds": 30
   }
 }

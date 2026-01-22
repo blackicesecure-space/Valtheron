@@ -1,73 +1,46 @@
 """
-Agent Orchestrator for the Agentic Workspace.
-Coordinates multiple agents to work together on complex tasks.
+Agent Orchestration System for the agentic workspace.
+
+Provides agent lifecycle management, capability-based routing,
+multi-agent coordination, and intelligent task delegation.
 """
 import json
+import logging
+import threading
 import time
-from enum import Enum
-from pathlib import Path
-from typing import Any, Dict, List, Optional, Callable, Type
 from dataclasses import dataclass, field
 from datetime import datetime
-from abc import ABC, abstractmethod
-import threading
-from queue import Queue, Empty
-import uuid
+from enum import Enum
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Set, Type
+from concurrent.futures import ThreadPoolExecutor
+
+logger = logging.getLogger(__name__)
 
 
-class AgentStatus(Enum):
-    """Status of an agent."""
-    IDLE = "idle"
+class AgentState(Enum):
+    """Lifecycle state of an agent."""
+    UNINITIALIZED = "uninitialized"
+    READY = "ready"
     BUSY = "busy"
     ERROR = "error"
-    OFFLINE = "offline"
+    TERMINATED = "terminated"
 
 
-class TaskPriority(Enum):
-    """Priority levels for tasks."""
-    LOW = 1
-    MEDIUM = 2
-    HIGH = 3
-    CRITICAL = 4
-
-
-@dataclass
-class AgentCapability:
-    """Represents a capability an agent provides."""
-    name: str
-    description: str
-    tools_required: List[str] = field(default_factory=list)
-
-
-@dataclass
-class AgentTask:
-    """A task to be executed by an agent."""
-    id: str
-    name: str
-    action: str
-    params: Dict[str, Any]
-    priority: TaskPriority = TaskPriority.MEDIUM
-    timeout_seconds: int = 300
-    created_at: datetime = field(default_factory=datetime.now)
-    assigned_agent: Optional[str] = None
-    status: str = "pending"
-    result: Any = None
-    error: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "action": self.action,
-            "params": self.params,
-            "priority": self.priority.value,
-            "timeout_seconds": self.timeout_seconds,
-            "created_at": self.created_at.isoformat(),
-            "assigned_agent": self.assigned_agent,
-            "status": self.status,
-            "result": self.result,
-            "error": self.error
-        }
+class AgentCapability(Enum):
+    """Standard agent capabilities."""
+    CODE_EXECUTION = "code-execution"
+    FILE_MANAGEMENT = "file-management"
+    COMMAND_EXECUTION = "command-execution"
+    TEXT_PROCESSING = "text-processing"
+    CODEBASE_ANALYSIS = "codebase-analysis"
+    DOCUMENTATION_RESEARCH = "documentation-research"
+    INFORMATION_GATHERING = "information-gathering"
+    PATTERN_RECOGNITION = "pattern-recognition"
+    TASK_PLANNING = "task-planning"
+    CODE_REVIEW = "code-review"
+    SECURITY_ANALYSIS = "security-analysis"
+    WORKFLOW_COORDINATION = "workflow-coordination"
 
 
 @dataclass
@@ -77,546 +50,560 @@ class AgentConfig:
     agent_type: str
     version: str
     description: str = ""
-    model: Dict[str, Any] = field(default_factory=dict)
+    model_provider: str = "anthropic"
+    model_name: str = "claude-sonnet-4-5-20250929"
+    temperature: float = 0.7
+    max_tokens: int = 4096
     tools: List[str] = field(default_factory=list)
     capabilities: List[str] = field(default_factory=list)
+    dependencies: List[str] = field(default_factory=list)
     config: Dict[str, Any] = field(default_factory=dict)
-
+    
     @classmethod
-    def from_file(cls, path: str) -> "AgentConfig":
-        """Load agent configuration from a JSON file."""
-        with open(path) as f:
-            data = json.load(f)
+    def from_dict(cls, data: Dict[str, Any]) -> "AgentConfig":
+        """Create config from dictionary."""
+        model = data.get("model", {})
         return cls(
             name=data["name"],
             agent_type=data["type"],
-            version=data["version"],
+            version=data.get("version", "1.0.0"),
             description=data.get("description", ""),
-            model=data.get("model", {}),
+            model_provider=model.get("provider", "anthropic"),
+            model_name=model.get("name", "claude-sonnet-4-5-20250929"),
+            temperature=model.get("temperature", 0.7),
+            max_tokens=model.get("max_tokens", 4096),
             tools=data.get("tools", []),
             capabilities=data.get("capabilities", []),
+            dependencies=data.get("dependencies", []),
             config=data.get("config", {})
         )
+    
+    @classmethod
+    def from_file(cls, path: str) -> "AgentConfig":
+        """Load config from JSON file."""
+        with open(path, "r") as f:
+            data = json.load(f)
+        return cls.from_dict(data)
 
 
-class BaseAgent(ABC):
+@dataclass
+class TaskContext:
+    """Context information passed to agent during task execution."""
+    task_id: str
+    workflow_id: Optional[str] = None
+    parent_task_id: Optional[str] = None
+    inputs: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    timeout_seconds: int = 300
+    created_at: str = field(default_factory=lambda: datetime.utcnow().isoformat())
+
+
+@dataclass
+class TaskResult:
+    """Result from an agent task execution."""
+    task_id: str
+    agent_name: str
+    status: str  # "success", "failure", "timeout", "cancelled"
+    output: Any = None
+    error: Optional[str] = None
+    started_at: Optional[str] = None
+    completed_at: Optional[str] = None
+    execution_time_ms: float = 0.0
+    tool_calls: List[Dict[str, Any]] = field(default_factory=list)
+    
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "task_id": self.task_id,
+            "agent_name": self.agent_name,
+            "status": self.status,
+            "output": self.output,
+            "error": self.error,
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "execution_time_ms": self.execution_time_ms,
+            "tool_calls": self.tool_calls
+        }
+
+
+class BaseAgent:
     """
-    Abstract base class for all agents.
-    Provides common functionality and interface for agent implementations.
+    Base class for all agents.
+    
+    Agents are autonomous units that can execute tasks using configured tools
+    and capabilities. This class provides the foundation for agent lifecycle
+    management and task execution.
     """
-
-    def __init__(self, config: AgentConfig, tools: Dict[str, Callable] = None):
+    
+    def __init__(self, config: AgentConfig):
         self.config = config
-        self.tools = tools or {}
-        self.status = AgentStatus.IDLE
-        self._current_task: Optional[AgentTask] = None
-        self._task_history: List[AgentTask] = []
+        self.state = AgentState.UNINITIALIZED
         self._lock = threading.Lock()
-
+        self._current_task: Optional[TaskContext] = None
+        self._tool_registry = None
+        self._execution_history: List[TaskResult] = []
+    
     @property
     def name(self) -> str:
         return self.config.name
-
-    @property
-    def agent_type(self) -> str:
-        return self.config.agent_type
-
+    
     @property
     def capabilities(self) -> List[str]:
         return self.config.capabilities
-
-    @abstractmethod
-    def execute(self, task: AgentTask) -> Any:
-        """Execute a task. Must be implemented by subclasses."""
-        pass
-
-    def can_handle(self, action: str) -> bool:
-        """Check if this agent can handle a specific action."""
-        return action in self.capabilities or action in self.tools
-
-    def run_task(self, task: AgentTask) -> AgentTask:
-        """Run a task with status tracking and error handling."""
-        with self._lock:
-            self.status = AgentStatus.BUSY
-            self._current_task = task
-            task.assigned_agent = self.name
-            task.status = "running"
-
-        try:
-            result = self.execute(task)
-            task.result = result
-            task.status = "completed"
-        except Exception as e:
-            task.error = str(e)
-            task.status = "failed"
-            self.status = AgentStatus.ERROR
-        finally:
-            with self._lock:
-                self._current_task = None
-                self._task_history.append(task)
-                if self.status != AgentStatus.ERROR:
-                    self.status = AgentStatus.IDLE
-
-        return task
-
-    def invoke_tool(self, tool_name: str, **kwargs) -> Any:
-        """Invoke a tool by name."""
-        if tool_name not in self.tools:
-            raise ValueError(f"Tool not available: {tool_name}")
+    
+    @property
+    def tools(self) -> List[str]:
+        return self.config.tools
+    
+    def initialize(self, tool_registry=None) -> bool:
+        """
+        Initialize the agent and prepare for task execution.
         
-        tool = self.tools[tool_name]
-        return tool(**kwargs)
-
+        Returns:
+            True if initialization successful
+        """
+        with self._lock:
+            if self.state != AgentState.UNINITIALIZED:
+                logger.warning(f"Agent {self.name} already initialized")
+                return True
+            
+            try:
+                self._tool_registry = tool_registry
+                self._validate_tools()
+                self.state = AgentState.READY
+                logger.info(f"Agent {self.name} initialized successfully")
+                return True
+            except Exception as e:
+                logger.error(f"Failed to initialize agent {self.name}: {e}")
+                self.state = AgentState.ERROR
+                return False
+    
+    def _validate_tools(self) -> None:
+        """Validate that all required tools are available."""
+        if self._tool_registry is None:
+            return
+        
+        available_tools = set(self._tool_registry.list_tools())
+        required_tools = set(self.config.tools)
+        missing = required_tools - available_tools
+        
+        if missing:
+            raise ValueError(f"Missing required tools: {missing}")
+    
+    def execute(self, action: str, context: TaskContext) -> TaskResult:
+        """
+        Execute a task with the given action and context.
+        
+        Args:
+            action: The action to perform
+            context: Task context with inputs and metadata
+            
+        Returns:
+            TaskResult with execution outcome
+        """
+        with self._lock:
+            if self.state != AgentState.READY:
+                return TaskResult(
+                    task_id=context.task_id,
+                    agent_name=self.name,
+                    status="failure",
+                    error=f"Agent not ready (state: {self.state.value})"
+                )
+            
+            self.state = AgentState.BUSY
+            self._current_task = context
+        
+        result = TaskResult(
+            task_id=context.task_id,
+            agent_name=self.name,
+            status="success",
+            started_at=datetime.utcnow().isoformat()
+        )
+        
+        start_time = time.time()
+        
+        try:
+            output = self._perform_action(action, context)
+            result.output = output
+            result.status = "success"
+        except TimeoutError as e:
+            result.status = "timeout"
+            result.error = str(e)
+        except Exception as e:
+            logger.exception(f"Agent {self.name} failed executing {action}")
+            result.status = "failure"
+            result.error = str(e)
+        finally:
+            result.completed_at = datetime.utcnow().isoformat()
+            result.execution_time_ms = (time.time() - start_time) * 1000
+            
+            with self._lock:
+                self.state = AgentState.READY
+                self._current_task = None
+                self._execution_history.append(result)
+        
+        return result
+    
+    def _perform_action(self, action: str, context: TaskContext) -> Any:
+        """
+        Perform the actual action. Override in subclasses for specific behavior.
+        
+        Default implementation routes to tool execution.
+        """
+        # Default behavior: try to find and execute a matching tool
+        if self._tool_registry:
+            tool = self._tool_registry.get(action)
+            if tool:
+                result = tool.run(**context.inputs)
+                if result.is_success():
+                    return result.data
+                else:
+                    raise RuntimeError(result.error)
+        
+        raise NotImplementedError(f"Action '{action}' not implemented")
+    
+    def terminate(self) -> None:
+        """Terminate the agent and clean up resources."""
+        with self._lock:
+            self.state = AgentState.TERMINATED
+            self._current_task = None
+            logger.info(f"Agent {self.name} terminated")
+    
     def get_stats(self) -> Dict[str, Any]:
-        """Get agent statistics."""
-        completed = sum(1 for t in self._task_history if t.status == "completed")
-        failed = sum(1 for t in self._task_history if t.status == "failed")
+        """Get agent execution statistics."""
+        successful = sum(1 for r in self._execution_history if r.status == "success")
+        failed = sum(1 for r in self._execution_history if r.status == "failure")
+        total_time = sum(r.execution_time_ms for r in self._execution_history)
         
         return {
             "name": self.name,
-            "type": self.agent_type,
-            "status": self.status.value,
-            "tasks_completed": completed,
-            "tasks_failed": failed,
-            "success_rate": completed / max(len(self._task_history), 1) * 100
+            "state": self.state.value,
+            "total_tasks": len(self._execution_history),
+            "successful_tasks": successful,
+            "failed_tasks": failed,
+            "success_rate": successful / len(self._execution_history) if self._execution_history else 0,
+            "total_execution_time_ms": total_time,
+            "average_execution_time_ms": total_time / len(self._execution_history) if self._execution_history else 0
         }
 
 
 class TaskExecutorAgent(BaseAgent):
-    """Agent specialized in executing code and commands."""
-
-    def execute(self, task: AgentTask) -> Any:
-        action = task.action
-        params = task.params
-
-        if action == "read_file" and "read" in self.tools:
-            return self.invoke_tool("read", file_path=params.get("file_path"))
-
-        elif action == "write_file" and "write" in self.tools:
-            return self.invoke_tool(
-                "write",
-                file_path=params.get("file_path"),
-                content=params.get("content")
-            )
-
-        elif action == "run_command" and "bash" in self.tools:
-            return self.invoke_tool("bash", command=params.get("command"))
-
-        elif action == "search_files" and "glob" in self.tools:
-            return self.invoke_tool(
-                "glob",
-                pattern=params.get("pattern"),
-                directory=params.get("directory", ".")
-            )
-
-        elif action in self.tools:
-            return self.invoke_tool(action, **params)
-
-        return {"simulated": True, "action": action, "params": params}
+    """Agent specialized for executing code, commands, and file operations."""
+    
+    def _perform_action(self, action: str, context: TaskContext) -> Any:
+        """Execute task-oriented actions."""
+        action_map = {
+            "read_file": "read",
+            "write_file": "write",
+            "edit_file": "edit",
+            "find_files": "glob",
+            "search_files": "grep",
+            "run_command": "bash",
+            "run_tests": "test_runner",
+        }
+        
+        tool_name = action_map.get(action, action)
+        
+        if self._tool_registry:
+            tool = self._tool_registry.get(tool_name)
+            if tool:
+                result = tool.run(**context.inputs)
+                if result.is_success():
+                    return result.data
+                else:
+                    raise RuntimeError(f"Tool execution failed: {result.error}")
+        
+        return super()._perform_action(action, context)
 
 
 class ResearcherAgent(BaseAgent):
-    """Agent specialized in gathering and analyzing information."""
-
-    def execute(self, task: AgentTask) -> Any:
-        action = task.action
-        params = task.params
-
-        if action == "analyze_code" and "code_analyzer" in self.tools:
-            return self.invoke_tool(
-                "code_analyzer",
-                file_path=params.get("file_path"),
-                language=params.get("language", "python"),
-                analysis_type=params.get("analysis_type", "all")
-            )
-
-        elif action == "search_content" and "grep" in self.tools:
-            return self.invoke_tool(
-                "grep",
-                pattern=params.get("pattern"),
-                path=params.get("path")
-            )
-
-        elif action == "find_files" and "glob" in self.tools:
-            return self.invoke_tool(
-                "glob",
-                pattern=params.get("pattern"),
-                directory=params.get("directory", ".")
-            )
-
-        elif action in self.tools:
-            return self.invoke_tool(action, **params)
-
-        return {"simulated": True, "action": action, "params": params}
-
-
-class PlannerAgent(BaseAgent):
-    """Agent specialized in breaking down complex tasks."""
-
-    def execute(self, task: AgentTask) -> Any:
-        action = task.action
-        params = task.params
-
-        if action == "decompose_task":
-            return self._decompose_task(params.get("task_description", ""))
-
-        elif action == "create_plan":
-            return self._create_plan(
-                params.get("goal", ""),
-                params.get("constraints", [])
-            )
-
-        return {"simulated": True, "action": action, "params": params}
-
-    def _decompose_task(self, description: str) -> Dict[str, Any]:
-        """Decompose a complex task into subtasks."""
+    """Agent specialized for information gathering and analysis."""
+    
+    def _perform_action(self, action: str, context: TaskContext) -> Any:
+        """Execute research-oriented actions."""
+        if action == "analyze_code":
+            return self._analyze_code(context.inputs)
+        elif action == "gather_information":
+            return self._gather_information(context.inputs)
+        elif action == "generate_review_summary":
+            return self._generate_summary(context.inputs)
+        
+        return super()._perform_action(action, context)
+    
+    def _analyze_code(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze code files for patterns and issues."""
+        if self._tool_registry:
+            analyzer = self._tool_registry.get("code_analyzer")
+            if analyzer:
+                files = inputs.get("files", [])
+                results = []
+                for file_path in files:
+                    result = analyzer.run(file_path=file_path, analysis_type="all")
+                    if result.is_success():
+                        results.append(result.data)
+                return {"analyses": results, "files_analyzed": len(results)}
+        
+        return {"error": "Code analyzer not available"}
+    
+    def _gather_information(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+        """Gather information from various sources."""
+        # Placeholder for information gathering logic
+        return {"gathered": True, "sources": inputs.get("sources", [])}
+    
+    def _generate_summary(self, inputs: Dict[str, Any]) -> Dict[str, Any]:
+        """Generate a summary from analysis results."""
+        analysis = inputs.get("analysis_results", {})
+        test_results = inputs.get("test_results", {})
+        
         return {
-            "original_task": description,
-            "subtasks": [
-                {"name": "analyze", "description": "Analyze requirements"},
-                {"name": "design", "description": "Design solution"},
-                {"name": "implement", "description": "Implement solution"},
-                {"name": "test", "description": "Test implementation"},
-                {"name": "review", "description": "Review and refine"}
-            ],
-            "estimated_steps": 5
-        }
-
-    def _create_plan(self, goal: str, constraints: List[str]) -> Dict[str, Any]:
-        """Create an execution plan for a goal."""
-        return {
-            "goal": goal,
-            "constraints": constraints,
-            "steps": [
-                {"order": 1, "action": "gather_requirements"},
-                {"order": 2, "action": "analyze_scope"},
-                {"order": 3, "action": "design_solution"},
-                {"order": 4, "action": "execute_plan"},
-                {"order": 5, "action": "validate_results"}
-            ]
+            "summary": "Analysis complete",
+            "issues_found": len(analysis.get("analyses", [])),
+            "tests_passed": test_results.get("passed", 0)
         }
 
 
-class ReviewerAgent(BaseAgent):
-    """Agent specialized in reviewing code and outputs."""
-
-    def execute(self, task: AgentTask) -> Any:
-        action = task.action
-        params = task.params
-
-        if action == "review_code" and "code_analyzer" in self.tools:
-            analysis = self.invoke_tool(
-                "code_analyzer",
-                file_path=params.get("file_path"),
-                language=params.get("language", "python"),
-                analysis_type="all"
-            )
-            return self._format_review(analysis)
-
-        elif action == "run_tests" and "test_runner" in self.tools:
-            return self.invoke_tool(
-                "test_runner",
-                test_path=params.get("test_path"),
-                framework=params.get("framework", "pytest")
-            )
-
-        return {"simulated": True, "action": action, "params": params}
-
-    def _format_review(self, analysis: Any) -> Dict[str, Any]:
-        """Format analysis results as a code review."""
-        if hasattr(analysis, 'data'):
-            data = analysis.data
-        else:
-            data = analysis
-
-        return {
-            "review_type": "automated",
-            "quality_score": data.get("metrics", {}).get("quality_score", 0),
-            "issues_found": len(data.get("issues", [])),
-            "issues": data.get("issues", []),
-            "recommendations": data.get("recommendations", []),
-            "approved": data.get("metrics", {}).get("quality_score", 0) >= 70
-        }
-
-
-class AgentRegistry:
-    """Registry for managing agent types."""
-
-    _agents: Dict[str, Type[BaseAgent]] = {
+class AgentFactory:
+    """Factory for creating agent instances."""
+    
+    _agent_types: Dict[str, Type[BaseAgent]] = {
         "task-executor": TaskExecutorAgent,
         "researcher": ResearcherAgent,
-        "planner": PlannerAgent,
-        "reviewer": ReviewerAgent,
+        "planner": BaseAgent,
+        "reviewer": BaseAgent,
+        "coordinator": BaseAgent,
     }
-
+    
     @classmethod
-    def register(cls, agent_type: str, agent_class: Type[BaseAgent]):
-        """Register a new agent type."""
-        cls._agents[agent_type] = agent_class
-
+    def register_type(cls, type_name: str, agent_class: Type[BaseAgent]) -> None:
+        """Register a custom agent type."""
+        cls._agent_types[type_name] = agent_class
+    
     @classmethod
-    def get(cls, agent_type: str) -> Optional[Type[BaseAgent]]:
-        """Get an agent class by type."""
-        return cls._agents.get(agent_type)
-
+    def create(cls, config: AgentConfig) -> BaseAgent:
+        """Create an agent instance from configuration."""
+        agent_class = cls._agent_types.get(config.agent_type, BaseAgent)
+        return agent_class(config)
+    
     @classmethod
-    def list_types(cls) -> List[str]:
-        """List all registered agent types."""
-        return list(cls._agents.keys())
+    def create_from_file(cls, path: str) -> BaseAgent:
+        """Create an agent from a configuration file."""
+        config = AgentConfig.from_file(path)
+        return cls.create(config)
 
 
 class AgentOrchestrator:
     """
-    Orchestrates multiple agents to accomplish complex tasks.
-    Handles agent lifecycle, task distribution, and coordination.
+    Central orchestrator for managing and coordinating multiple agents.
+    
+    Provides:
+    - Agent lifecycle management
+    - Capability-based task routing
+    - Multi-agent coordination
+    - Load balancing
+    - Health monitoring
     """
-
-    def __init__(
-        self,
-        agents_dir: str = "./agents",
-        tools: Optional[Dict[str, Callable]] = None,
-        logger: Optional[Any] = None,
-        max_concurrent_tasks: int = 4
-    ):
-        self.agents_dir = Path(agents_dir)
-        self.tools = tools or {}
-        self.logger = logger
-        self.max_concurrent_tasks = max_concurrent_tasks
-        
+    
+    def __init__(self, max_concurrent_tasks: int = 4):
         self._agents: Dict[str, BaseAgent] = {}
-        self._task_queue: Queue = Queue()
-        self._results: Dict[str, AgentTask] = {}
+        self._capability_index: Dict[str, Set[str]] = {}  # capability -> agent names
         self._lock = threading.Lock()
-        self._running = False
-        self._workers: List[threading.Thread] = []
-
-    def load_agents(self) -> int:
-        """Load all agent configurations from the agents directory."""
-        loaded = 0
+        self._executor = ThreadPoolExecutor(max_workers=max_concurrent_tasks)
+        self._tool_registry = None
+    
+    def set_tool_registry(self, registry) -> None:
+        """Set the tool registry for agent initialization."""
+        self._tool_registry = registry
+    
+    def register_agent(self, agent: BaseAgent) -> bool:
+        """
+        Register an agent with the orchestrator.
         
-        for config_file in self.agents_dir.glob("*.json"):
-            if config_file.name.startswith("example-") or config_file.name.endswith("-schema.json"):
-                try:
-                    config = AgentConfig.from_file(str(config_file))
-                    self.register_agent(config)
-                    loaded += 1
-                except Exception as e:
-                    if self.logger:
-                        self.logger.log_error("orchestrator", e, {"file": str(config_file)})
-
-        return loaded
-
-    def register_agent(self, config: AgentConfig) -> BaseAgent:
+        Args:
+            agent: The agent to register
+            
+        Returns:
+            True if registration successful
+        """
+        with self._lock:
+            if agent.name in self._agents:
+                logger.warning(f"Agent {agent.name} already registered, replacing")
+            
+            # Initialize agent
+            if not agent.initialize(self._tool_registry):
+                return False
+            
+            self._agents[agent.name] = agent
+            
+            # Index capabilities
+            for capability in agent.capabilities:
+                if capability not in self._capability_index:
+                    self._capability_index[capability] = set()
+                self._capability_index[capability].add(agent.name)
+            
+            logger.info(f"Registered agent: {agent.name}")
+            return True
+    
+    def register_from_config(self, config: AgentConfig) -> bool:
         """Register an agent from configuration."""
-        agent_class = AgentRegistry.get(config.agent_type)
-        if not agent_class:
-            raise ValueError(f"Unknown agent type: {config.agent_type}")
-
-        # Filter tools for this agent
-        agent_tools = {name: tool for name, tool in self.tools.items() if name in config.tools}
+        agent = AgentFactory.create(config)
+        return self.register_agent(agent)
+    
+    def register_from_file(self, path: str) -> bool:
+        """Register an agent from a configuration file."""
+        config = AgentConfig.from_file(path)
+        return self.register_from_config(config)
+    
+    def register_from_directory(self, directory: str, pattern: str = "*.json") -> int:
+        """
+        Register all agents from configuration files in a directory.
         
-        agent = agent_class(config, agent_tools)
-        self._agents[config.name] = agent
+        Returns:
+            Number of agents successfully registered
+        """
+        dir_path = Path(directory)
+        count = 0
         
-        if self.logger:
-            self.logger.log_agent_action(
-                config.name,
-                "registered",
-                {"type": config.agent_type, "capabilities": config.capabilities}
-            )
+        for config_file in dir_path.glob(pattern):
+            if config_file.name.startswith("example-") or config_file.name.endswith(".schema.json"):
+                continue
+            
+            try:
+                if self.register_from_file(str(config_file)):
+                    count += 1
+            except Exception as e:
+                logger.error(f"Failed to register agent from {config_file}: {e}")
         
-        return agent
-
+        return count
+    
     def get_agent(self, name: str) -> Optional[BaseAgent]:
         """Get an agent by name."""
         return self._agents.get(name)
-
-    def list_agents(self) -> List[Dict[str, Any]]:
-        """List all registered agents with their status."""
-        return [agent.get_stats() for agent in self._agents.values()]
-
-    def find_agent_for_task(self, action: str) -> Optional[BaseAgent]:
-        """Find an available agent that can handle a specific action."""
-        for agent in self._agents.values():
-            if agent.status == AgentStatus.IDLE and agent.can_handle(action):
-                return agent
-        return None
-
-    def submit_task(
-        self,
-        name: str,
-        action: str,
-        params: Dict[str, Any],
-        priority: TaskPriority = TaskPriority.MEDIUM,
-        agent_name: Optional[str] = None,
-        timeout_seconds: int = 300
-    ) -> str:
-        """Submit a task for execution."""
-        task = AgentTask(
-            id=str(uuid.uuid4()),
-            name=name,
-            action=action,
-            params=params,
-            priority=priority,
-            timeout_seconds=timeout_seconds,
-            assigned_agent=agent_name
-        )
-        
-        self._task_queue.put((priority.value, task))
-        
-        if self.logger:
-            self.logger.log_agent_action(
-                "orchestrator",
-                "task_submitted",
-                {"task_id": task.id, "action": action}
-            )
-        
-        return task.id
-
-    def execute_task(
-        self,
-        name: str,
-        action: str,
-        params: Dict[str, Any],
-        agent_name: Optional[str] = None
-    ) -> AgentTask:
-        """Execute a task synchronously."""
-        task = AgentTask(
-            id=str(uuid.uuid4()),
-            name=name,
-            action=action,
-            params=params,
-            assigned_agent=agent_name
-        )
-
-        # Find or use specified agent
-        if agent_name:
-            agent = self.get_agent(agent_name)
-            if not agent:
-                task.status = "failed"
-                task.error = f"Agent not found: {agent_name}"
-                return task
-        else:
-            agent = self.find_agent_for_task(action)
-            if not agent:
-                task.status = "failed"
-                task.error = f"No available agent for action: {action}"
-                return task
-
-        # Execute task
-        return agent.run_task(task)
-
-    def start(self):
-        """Start the orchestrator's background workers."""
-        if self._running:
-            return
-
-        self._running = True
-        
-        for i in range(self.max_concurrent_tasks):
-            worker = threading.Thread(target=self._worker_loop, name=f"worker-{i}")
-            worker.daemon = True
-            worker.start()
-            self._workers.append(worker)
-
-    def stop(self):
-        """Stop the orchestrator's background workers."""
-        self._running = False
-        
-        # Wait for workers to finish
-        for worker in self._workers:
-            worker.join(timeout=5)
-        
-        self._workers.clear()
-
-    def _worker_loop(self):
-        """Background worker loop for processing tasks."""
-        while self._running:
-            try:
-                _, task = self._task_queue.get(timeout=1)
-            except Empty:
-                continue
-
-            # Find agent
-            if task.assigned_agent:
-                agent = self.get_agent(task.assigned_agent)
-            else:
-                agent = self.find_agent_for_task(task.action)
-
-            if agent:
-                try:
-                    agent.run_task(task)
-                except Exception as e:
-                    task.status = "failed"
-                    task.error = str(e)
-            else:
-                task.status = "failed"
-                task.error = f"No agent available for: {task.action}"
-
-            with self._lock:
-                self._results[task.id] = task
-
-    def get_result(self, task_id: str) -> Optional[AgentTask]:
-        """Get the result of a submitted task."""
-        with self._lock:
-            return self._results.get(task_id)
-
-    def delegate(
-        self,
-        goal: str,
-        context: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    
+    def find_agents_by_capability(self, capability: str) -> List[BaseAgent]:
+        """Find all agents that have a specific capability."""
+        agent_names = self._capability_index.get(capability, set())
+        return [self._agents[name] for name in agent_names if name in self._agents]
+    
+    def select_agent(self, 
+                     required_capabilities: Optional[List[str]] = None,
+                     preferred_agent: Optional[str] = None) -> Optional[BaseAgent]:
         """
-        High-level delegation: orchestrator decides how to accomplish a goal.
-        This is a simplified implementation showing the pattern.
-        """
-        context = context or {}
+        Select the best available agent for a task.
         
-        # Use planner agent if available
-        planner = None
-        for agent in self._agents.values():
-            if agent.agent_type == "planner":
-                planner = agent
-                break
-
-        if planner:
-            # Get plan from planner
-            plan_task = AgentTask(
-                id=str(uuid.uuid4()),
-                name="create_plan",
-                action="create_plan",
-                params={"goal": goal, "constraints": context.get("constraints", [])}
-            )
-            plan_result = planner.run_task(plan_task)
+        Args:
+            required_capabilities: Capabilities the agent must have
+            preferred_agent: Name of preferred agent
             
-            if plan_result.status == "completed":
-                return {
-                    "goal": goal,
-                    "plan": plan_result.result,
-                    "status": "planned"
-                }
-
-        return {
-            "goal": goal,
-            "error": "Could not create execution plan",
-            "status": "failed"
-        }
-
-    def coordinate_workflow(
-        self,
-        workflow: Dict[str, Any],
-        inputs: Dict[str, Any]
-    ) -> Dict[str, Any]:
+        Returns:
+            Selected agent or None if no suitable agent found
         """
-        Coordinate a workflow by assigning steps to appropriate agents.
-        """
-        from .workflow_engine import WorkflowEngine
+        # Try preferred agent first
+        if preferred_agent and preferred_agent in self._agents:
+            agent = self._agents[preferred_agent]
+            if agent.state == AgentState.READY:
+                if not required_capabilities or all(
+                    cap in agent.capabilities for cap in required_capabilities
+                ):
+                    return agent
         
-        engine = WorkflowEngine(
-            agents=self._agents,
-            tools=self.tools,
-            logger=self.logger
+        # Find agents with required capabilities
+        candidates = list(self._agents.values())
+        
+        if required_capabilities:
+            candidates = [
+                a for a in candidates
+                if all(cap in a.capabilities for cap in required_capabilities)
+            ]
+        
+        # Filter by ready state
+        ready_candidates = [a for a in candidates if a.state == AgentState.READY]
+        
+        if not ready_candidates:
+            return None
+        
+        # Select agent with best success rate
+        return max(ready_candidates, key=lambda a: a.get_stats().get("success_rate", 0))
+    
+    def execute_task(self,
+                     agent_name: str,
+                     action: str,
+                     inputs: Dict[str, Any],
+                     task_id: Optional[str] = None,
+                     timeout_seconds: int = 300) -> TaskResult:
+        """
+        Execute a task on a specific agent.
+        
+        Args:
+            agent_name: Name of the agent to use
+            action: Action to perform
+            inputs: Input parameters
+            task_id: Optional task identifier
+            timeout_seconds: Maximum execution time
+            
+        Returns:
+            TaskResult with execution outcome
+        """
+        agent = self.get_agent(agent_name)
+        
+        if not agent:
+            return TaskResult(
+                task_id=task_id or f"task-{time.time()}",
+                agent_name=agent_name,
+                status="failure",
+                error=f"Agent not found: {agent_name}"
+            )
+        
+        context = TaskContext(
+            task_id=task_id or f"task-{time.time()}",
+            inputs=inputs,
+            timeout_seconds=timeout_seconds
         )
         
-        result = engine.execute(workflow, inputs)
-        return result.to_dict()
+        return agent.execute(action, context)
+    
+    def delegate_task(self,
+                      action: str,
+                      inputs: Dict[str, Any],
+                      required_capabilities: Optional[List[str]] = None,
+                      task_id: Optional[str] = None) -> TaskResult:
+        """
+        Delegate a task to the best available agent.
+        
+        Args:
+            action: Action to perform
+            inputs: Input parameters
+            required_capabilities: Required agent capabilities
+            task_id: Optional task identifier
+            
+        Returns:
+            TaskResult with execution outcome
+        """
+        agent = self.select_agent(required_capabilities=required_capabilities)
+        
+        if not agent:
+            return TaskResult(
+                task_id=task_id or f"task-{time.time()}",
+                agent_name="none",
+                status="failure",
+                error=f"No suitable agent found for capabilities: {required_capabilities}"
+            )
+        
+        return self.execute_task(agent.name, action, inputs, task_id)
+    
+    def get_all_stats(self) -> Dict[str, Any]:
+        """Get statistics for all agents."""
+        return {
+            "agents": {name: agent.get_stats() for name, agent in self._agents.items()},
+            "total_agents": len(self._agents),
+            "ready_agents": sum(1 for a in self._agents.values() if a.state == AgentState.READY),
+            "capabilities": {cap: list(agents) for cap, agents in self._capability_index.items()}
+        }
+    
+    def shutdown(self) -> None:
+        """Shutdown all agents and the orchestrator."""
+        logger.info("Shutting down orchestrator")
+        
+        for agent in self._agents.values():
+            agent.terminate()
+        
+        self._executor.shutdown(wait=True)
+        logger.info("Orchestrator shutdown complete")

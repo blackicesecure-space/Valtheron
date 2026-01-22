@@ -1,295 +1,291 @@
 """
-Code Analyzer Tool Implementation.
-Analyzes code for complexity, security issues, and performance concerns.
+Code analysis tools for the agentic workspace.
+Provides complexity analysis, security scanning, and code quality metrics.
 """
 import ast
 import re
-import os
 from pathlib import Path
-from typing import Any, Dict, List, Optional
-from dataclasses import dataclass
+from typing import List, Dict, Any, Optional
+from dataclasses import dataclass, field
 
-from .base_tool import (
-    BaseTool, ToolResult, ToolStatus, ToolParameter, ToolRegistry
-)
+from .base import BaseTool, ToolParameter, ToolResult, register_tool
 
 
 @dataclass
-class CodeIssue:
-    """Represents a code issue found during analysis."""
-    severity: str  # low, medium, high, critical
-    category: str  # complexity, security, performance, style
-    message: str
-    line: Optional[int] = None
-    suggestion: Optional[str] = None
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "severity": self.severity,
-            "category": self.category,
-            "message": self.message,
-            "line": self.line,
-            "suggestion": self.suggestion
-        }
+class FunctionMetrics:
+    """Metrics for a single function."""
+    name: str
+    line_start: int
+    line_end: int
+    cyclomatic_complexity: int
+    cognitive_complexity: int
+    lines_of_code: int
+    parameters: int
+    returns_count: int
+    has_docstring: bool
 
 
-class ComplexityAnalyzer:
-    """Analyzes code complexity metrics."""
+@dataclass
+class FileMetrics:
+    """Metrics for a single file."""
+    path: str
+    language: str
+    total_lines: int
+    code_lines: int
+    comment_lines: int
+    blank_lines: int
+    functions: List[FunctionMetrics] = field(default_factory=list)
+    classes: int = 0
+    imports: int = 0
+    average_complexity: float = 0.0
 
-    def __init__(self, code: str, language: str):
-        self.code = code
-        self.language = language
-        self.lines = code.split('\n')
 
-    def calculate_cyclomatic_complexity(self) -> int:
-        """Calculate cyclomatic complexity for Python code."""
-        if self.language != "python":
-            return self._estimate_complexity()
-
-        try:
-            tree = ast.parse(self.code)
-            complexity = 1
-
-            for node in ast.walk(tree):
-                if isinstance(node, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
-                    complexity += 1
-                elif isinstance(node, ast.BoolOp):
-                    complexity += len(node.values) - 1
-                elif isinstance(node, (ast.And, ast.Or)):
-                    complexity += 1
-
-            return complexity
-        except SyntaxError:
-            return self._estimate_complexity()
-
-    def _estimate_complexity(self) -> int:
-        """Estimate complexity for non-Python languages."""
-        patterns = [
-            r'\bif\b', r'\belse\b', r'\belif\b', r'\bfor\b', r'\bwhile\b',
-            r'\bcatch\b', r'\bexcept\b', r'\bcase\b', r'\b\?\s*:', r'\&\&', r'\|\|'
-        ]
-        complexity = 1
-        for pattern in patterns:
-            complexity += len(re.findall(pattern, self.code))
+class PythonAnalyzer:
+    """Static analyzer for Python code."""
+    
+    @staticmethod
+    def calculate_cyclomatic_complexity(node: ast.AST) -> int:
+        """
+        Calculate cyclomatic complexity of an AST node.
+        
+        Complexity increases for each decision point:
+        - if, elif, for, while, except, with, assert
+        - boolean operators (and, or)
+        - comprehensions
+        """
+        complexity = 1  # Base complexity
+        
+        for child in ast.walk(node):
+            if isinstance(child, (ast.If, ast.While, ast.For, ast.ExceptHandler)):
+                complexity += 1
+            elif isinstance(child, ast.BoolOp):
+                complexity += len(child.values) - 1
+            elif isinstance(child, (ast.ListComp, ast.SetComp, ast.DictComp, ast.GeneratorExp)):
+                complexity += 1
+            elif isinstance(child, ast.comprehension):
+                complexity += len(child.ifs)
+            elif isinstance(child, ast.Assert):
+                complexity += 1
+            elif isinstance(child, ast.With):
+                complexity += 1
+        
         return complexity
-
-    def calculate_loc_metrics(self) -> Dict[str, int]:
-        """Calculate lines of code metrics."""
-        total_lines = len(self.lines)
-        blank_lines = sum(1 for line in self.lines if not line.strip())
-        comment_lines = sum(1 for line in self.lines if line.strip().startswith(('#', '//', '/*', '*')))
+    
+    @staticmethod
+    def calculate_cognitive_complexity(node: ast.AST, nesting: int = 0) -> int:
+        """
+        Calculate cognitive complexity (how hard code is to understand).
+        
+        Adds to complexity for:
+        - Nesting depth
+        - Breaking linear flow
+        - Recursion
+        """
+        complexity = 0
+        
+        for child in ast.iter_child_nodes(node):
+            if isinstance(child, (ast.If, ast.While, ast.For)):
+                complexity += 1 + nesting
+                complexity += PythonAnalyzer.calculate_cognitive_complexity(child, nesting + 1)
+            elif isinstance(child, ast.ExceptHandler):
+                complexity += 1 + nesting
+                complexity += PythonAnalyzer.calculate_cognitive_complexity(child, nesting + 1)
+            elif isinstance(child, ast.BoolOp):
+                complexity += 1
+            elif isinstance(child, (ast.Break, ast.Continue)):
+                complexity += 1
+            else:
+                complexity += PythonAnalyzer.calculate_cognitive_complexity(child, nesting)
+        
+        return complexity
+    
+    @classmethod
+    def analyze_function(cls, node: ast.FunctionDef, source_lines: List[str]) -> FunctionMetrics:
+        """Analyze a single function."""
+        line_start = node.lineno
+        line_end = node.end_lineno or line_start
+        
+        # Count parameters
+        args = node.args
+        param_count = (
+            len(args.args) + len(args.posonlyargs) + len(args.kwonlyargs) +
+            (1 if args.vararg else 0) + (1 if args.kwarg else 0)
+        )
+        
+        # Count return statements
+        returns = sum(1 for n in ast.walk(node) if isinstance(n, ast.Return))
+        
+        # Check for docstring
+        has_docstring = (
+            node.body and
+            isinstance(node.body[0], ast.Expr) and
+            isinstance(node.body[0].value, ast.Constant) and
+            isinstance(node.body[0].value.value, str)
+        )
+        
+        # Lines of code (excluding blanks and comments)
+        func_lines = source_lines[line_start - 1:line_end]
+        loc = sum(1 for line in func_lines if line.strip() and not line.strip().startswith('#'))
+        
+        return FunctionMetrics(
+            name=node.name,
+            line_start=line_start,
+            line_end=line_end,
+            cyclomatic_complexity=cls.calculate_cyclomatic_complexity(node),
+            cognitive_complexity=cls.calculate_cognitive_complexity(node),
+            lines_of_code=loc,
+            parameters=param_count,
+            returns_count=returns,
+            has_docstring=has_docstring
+        )
+    
+    @classmethod
+    def analyze_file(cls, content: str, file_path: str) -> FileMetrics:
+        """Analyze a Python file."""
+        lines = content.splitlines()
+        
+        # Count line types
+        total_lines = len(lines)
+        blank_lines = sum(1 for line in lines if not line.strip())
+        comment_lines = sum(1 for line in lines if line.strip().startswith('#'))
         code_lines = total_lines - blank_lines - comment_lines
-
-        return {
-            "total_lines": total_lines,
-            "code_lines": code_lines,
-            "blank_lines": blank_lines,
-            "comment_lines": comment_lines,
-            "comment_ratio": round(comment_lines / max(code_lines, 1) * 100, 2)
-        }
-
-    def find_long_functions(self, threshold: int = 50) -> List[CodeIssue]:
-        """Find functions that exceed the line threshold."""
-        issues = []
-        if self.language != "python":
-            return issues
-
+        
         try:
-            tree = ast.parse(self.code)
-            for node in ast.walk(tree):
-                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
-                    func_lines = node.end_lineno - node.lineno + 1
-                    if func_lines > threshold:
-                        issues.append(CodeIssue(
-                            severity="medium",
-                            category="complexity",
-                            message=f"Function '{node.name}' is {func_lines} lines (threshold: {threshold})",
-                            line=node.lineno,
-                            suggestion="Consider breaking this function into smaller, focused functions"
-                        ))
-        except SyntaxError:
-            pass
+            tree = ast.parse(content)
+        except SyntaxError as e:
+            return FileMetrics(
+                path=file_path,
+                language="python",
+                total_lines=total_lines,
+                code_lines=code_lines,
+                comment_lines=comment_lines,
+                blank_lines=blank_lines
+            )
+        
+        functions = []
+        classes = 0
+        imports = 0
+        
+        for node in ast.walk(tree):
+            if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+                # Skip nested functions and methods (they're counted separately)
+                functions.append(cls.analyze_function(node, lines))
+            elif isinstance(node, ast.ClassDef):
+                classes += 1
+            elif isinstance(node, (ast.Import, ast.ImportFrom)):
+                imports += 1
+        
+        avg_complexity = (
+            sum(f.cyclomatic_complexity for f in functions) / len(functions)
+            if functions else 0
+        )
+        
+        return FileMetrics(
+            path=file_path,
+            language="python",
+            total_lines=total_lines,
+            code_lines=code_lines,
+            comment_lines=comment_lines,
+            blank_lines=blank_lines,
+            functions=functions,
+            classes=classes,
+            imports=imports,
+            average_complexity=round(avg_complexity, 2)
+        )
 
-        return issues
 
-
-class SecurityAnalyzer:
-    """Analyzes code for security vulnerabilities."""
-
-    SECURITY_PATTERNS = {
-        "python": [
-            (r'eval\s*\(', "high", "Use of eval() can execute arbitrary code", "Use ast.literal_eval() for safe evaluation"),
-            (r'exec\s*\(', "high", "Use of exec() can execute arbitrary code", "Avoid exec() or use restricted execution"),
-            (r'__import__\s*\(', "medium", "Dynamic imports can be a security risk", "Use explicit imports"),
-            (r'pickle\.loads?\s*\(', "high", "Pickle can execute arbitrary code during deserialization", "Use JSON or other safe formats"),
-            (r'subprocess\..*shell\s*=\s*True', "high", "Shell=True can lead to command injection", "Use shell=False with explicit arguments"),
-            (r'os\.system\s*\(', "high", "os.system() is vulnerable to command injection", "Use subprocess with shell=False"),
-            (r'input\s*\(', "low", "User input should be validated", "Validate and sanitize user input"),
-            (r'password\s*=\s*["\'][^"\']+["\']', "critical", "Hardcoded password detected", "Use environment variables or secure vaults"),
-            (r'api[_-]?key\s*=\s*["\'][^"\']+["\']', "critical", "Hardcoded API key detected", "Use environment variables"),
-            (r'secret\s*=\s*["\'][^"\']+["\']', "critical", "Hardcoded secret detected", "Use environment variables or secure vaults"),
+class SecurityScanner:
+    """Basic security scanner for code."""
+    
+    PATTERNS = {
+        "hardcoded_secret": [
+            (r'(?i)(password|passwd|pwd|secret|api_key|apikey|token|auth)\s*=\s*["\'][^"\']+["\']', "Possible hardcoded secret"),
+            (r'(?i)(password|secret|key)\s*:\s*["\'][^"\']+["\']', "Possible hardcoded secret in dict/config"),
         ],
-        "javascript": [
-            (r'eval\s*\(', "high", "Use of eval() can execute arbitrary code", "Avoid eval() entirely"),
-            (r'innerHTML\s*=', "medium", "innerHTML can lead to XSS", "Use textContent or sanitize input"),
-            (r'document\.write\s*\(', "medium", "document.write can overwrite page content", "Use DOM manipulation methods"),
-            (r'localStorage\.(get|set)Item', "low", "LocalStorage is not secure for sensitive data", "Use secure storage for sensitive data"),
-            (r'password\s*[:=]\s*["\'][^"\']+["\']', "critical", "Hardcoded password detected", "Use environment variables"),
-        ]
+        "sql_injection": [
+            (r'execute\s*\(\s*["\'].*%s', "Possible SQL injection via string formatting"),
+            (r'execute\s*\(\s*f["\']', "Possible SQL injection via f-string"),
+            (r'cursor\.execute\s*\([^,]+\+', "Possible SQL injection via concatenation"),
+        ],
+        "command_injection": [
+            (r'os\.system\s*\(', "Use of os.system (prefer subprocess with shell=False)"),
+            (r'subprocess.*shell\s*=\s*True', "subprocess with shell=True"),
+            (r'eval\s*\(', "Use of eval() - potential code injection"),
+            (r'exec\s*\(', "Use of exec() - potential code injection"),
+        ],
+        "path_traversal": [
+            (r'open\s*\([^)]*\+', "Possible path traversal via concatenation"),
+        ],
+        "insecure_random": [
+            (r'import\s+random(?!\s+#.*cryptographic)', "random module (not cryptographically secure)"),
+        ],
+        "debug_code": [
+            (r'import\s+pdb', "Debug import (pdb)"),
+            (r'breakpoint\s*\(', "Debug breakpoint"),
+            (r'print\s*\([^)]*password', "Possible password in print statement"),
+        ],
     }
-
-    def __init__(self, code: str, language: str):
-        self.code = code
-        self.language = language
-        self.lines = code.split('\n')
-
-    def analyze(self) -> List[CodeIssue]:
-        """Run security analysis on the code."""
+    
+    @classmethod
+    def scan(cls, content: str, file_path: str) -> List[Dict[str, Any]]:
+        """Scan content for security issues."""
         issues = []
-        patterns = self.SECURITY_PATTERNS.get(self.language, [])
-
-        for pattern, severity, message, suggestion in patterns:
-            for i, line in enumerate(self.lines, 1):
-                if re.search(pattern, line, re.IGNORECASE):
-                    issues.append(CodeIssue(
-                        severity=severity,
-                        category="security",
-                        message=message,
-                        line=i,
-                        suggestion=suggestion
-                    ))
-
+        lines = content.splitlines()
+        
+        for category, patterns in cls.PATTERNS.items():
+            for pattern, description in patterns:
+                for line_num, line in enumerate(lines, 1):
+                    if re.search(pattern, line):
+                        issues.append({
+                            "category": category,
+                            "severity": cls._get_severity(category),
+                            "description": description,
+                            "file": file_path,
+                            "line": line_num,
+                            "content": line.strip()[:100]
+                        })
+        
         return issues
+    
+    @staticmethod
+    def _get_severity(category: str) -> str:
+        severity_map = {
+            "hardcoded_secret": "high",
+            "sql_injection": "critical",
+            "command_injection": "critical",
+            "path_traversal": "high",
+            "insecure_random": "medium",
+            "debug_code": "low",
+        }
+        return severity_map.get(category, "medium")
 
 
-class PerformanceAnalyzer:
-    """Analyzes code for performance concerns."""
-
-    def __init__(self, code: str, language: str):
-        self.code = code
-        self.language = language
-        self.lines = code.split('\n')
-
-    def analyze(self) -> List[CodeIssue]:
-        """Run performance analysis on the code."""
-        issues = []
-
-        if self.language == "python":
-            issues.extend(self._analyze_python())
-        elif self.language in ["javascript", "typescript"]:
-            issues.extend(self._analyze_javascript())
-
-        return issues
-
-    def _analyze_python(self) -> List[CodeIssue]:
-        """Analyze Python-specific performance issues."""
-        issues = []
-
-        patterns = [
-            (r'\+\s*=\s*.*\bstr\b|\bstr\b.*\+\s*=', "Repeated string concatenation in loop", "Use ''.join() or f-strings"),
-            (r'for\s+.*\s+in\s+range\(len\(', "Using range(len()) is often unnecessary", "Iterate directly or use enumerate()"),
-            (r'\.append\(.*\)\s*$', None, None),  # Check for loop context
-            (r'import\s+\*', "Wildcard imports affect performance and readability", "Import specific names"),
-            (r'global\s+\w+', "Global variables can impact performance", "Consider passing as parameters"),
-        ]
-
-        for i, line in enumerate(self.lines, 1):
-            for pattern, message, suggestion in patterns:
-                if message and re.search(pattern, line):
-                    issues.append(CodeIssue(
-                        severity="low",
-                        category="performance",
-                        message=message,
-                        line=i,
-                        suggestion=suggestion
-                    ))
-
-        # Check for list comprehension opportunities
-        try:
-            tree = ast.parse(self.code)
-            for node in ast.walk(tree):
-                if isinstance(node, ast.For):
-                    # Simple heuristic: for loop with single append
-                    if (len(node.body) == 1 and 
-                        isinstance(node.body[0], ast.Expr) and
-                        isinstance(node.body[0].value, ast.Call)):
-                        call = node.body[0].value
-                        if (isinstance(call.func, ast.Attribute) and 
-                            call.func.attr == 'append'):
-                            issues.append(CodeIssue(
-                                severity="low",
-                                category="performance",
-                                message="Loop with append could be a list comprehension",
-                                line=node.lineno,
-                                suggestion="Consider using a list comprehension for better performance"
-                            ))
-        except SyntaxError:
-            pass
-
-        return issues
-
-    def _analyze_javascript(self) -> List[CodeIssue]:
-        """Analyze JavaScript-specific performance issues."""
-        issues = []
-
-        patterns = [
-            (r'document\.getElementById.*for|for.*document\.getElementById', "DOM access in loop", "Cache DOM references outside the loop"),
-            (r'\.innerHTML\s*\+=', "innerHTML concatenation is slow", "Build string then assign once"),
-            (r'Array\((\d+)\)\.fill', None, None),  # Often OK
-            (r'JSON\.parse\(JSON\.stringify', "Deep clone via JSON is slow", "Use structuredClone() or a library"),
-        ]
-
-        for i, line in enumerate(self.lines, 1):
-            for pattern, message, suggestion in patterns:
-                if message and re.search(pattern, line):
-                    issues.append(CodeIssue(
-                        severity="low",
-                        category="performance",
-                        message=message,
-                        line=i,
-                        suggestion=suggestion
-                    ))
-
-        return issues
-
-
-@ToolRegistry.register
 class CodeAnalyzerTool(BaseTool):
-    """
-    Analyzes code for complexity, security, and performance issues.
-    Supports Python, JavaScript, TypeScript, and provides basic analysis
-    for other languages.
-    """
-
+    """Analyze code for complexity, maintainability, and security."""
+    
     @property
     def name(self) -> str:
         return "code_analyzer"
-
+    
     @property
     def description(self) -> str:
-        return "Analyzes code for complexity, maintainability, security, and performance issues"
-
-    @classmethod
-    def get_parameters(cls) -> List[ToolParameter]:
+        return "Analyze code for complexity, maintainability, and potential security issues"
+    
+    @property
+    def parameters(self) -> List[ToolParameter]:
         return [
             ToolParameter(
                 name="file_path",
                 param_type="string",
-                description="Path to the file to analyze",
-                required=False
-            ),
-            ToolParameter(
-                name="code",
-                param_type="string",
-                description="Code string to analyze (alternative to file_path)",
-                required=False
+                description="Path to the file to analyze"
             ),
             ToolParameter(
                 name="language",
                 param_type="string",
-                description="Programming language of the code",
-                required=True,
-                enum_values=["python", "javascript", "typescript", "java", "go", "rust"]
+                description="Programming language",
+                required=False,
+                default="auto",
+                enum_values=["auto", "python", "javascript", "typescript"]
             ),
             ToolParameter(
                 name="analysis_type",
@@ -297,118 +293,99 @@ class CodeAnalyzerTool(BaseTool):
                 description="Type of analysis to perform",
                 required=False,
                 default="all",
-                enum_values=["complexity", "security", "performance", "all"]
+                enum_values=["complexity", "security", "all"]
             )
         ]
-
-    def execute(self, **kwargs) -> ToolResult:
-        file_path = kwargs.get("file_path")
-        code = kwargs.get("code")
-        language = kwargs.get("language")
-        analysis_type = kwargs.get("analysis_type", "all")
-
-        # Get code from file or direct input
-        if file_path:
-            path = Path(file_path)
-            if not path.exists():
-                return ToolResult(
-                    status=ToolStatus.ERROR,
-                    error=f"File not found: {file_path}"
-                )
-            try:
-                code = path.read_text()
-            except Exception as e:
-                return ToolResult(
-                    status=ToolStatus.ERROR,
-                    error=f"Error reading file: {e}"
-                )
-        elif not code:
-            return ToolResult(
-                status=ToolStatus.INVALID_INPUT,
-                error="Either file_path or code must be provided"
-            )
-
-        # Run analysis
-        results = {
-            "file": file_path,
+    
+    def execute(self, file_path: str, language: str = "auto",
+                analysis_type: str = "all") -> ToolResult:
+        path = Path(file_path)
+        
+        if not path.exists():
+            return ToolResult.failure(f"File not found: {file_path}", "FileNotFoundError")
+        
+        try:
+            content = path.read_text(encoding="utf-8")
+        except UnicodeDecodeError:
+            return ToolResult.failure("Unable to read file as text", "UnicodeDecodeError")
+        
+        # Detect language
+        if language == "auto":
+            suffix = path.suffix.lower()
+            language_map = {
+                ".py": "python",
+                ".js": "javascript",
+                ".ts": "typescript",
+                ".jsx": "javascript",
+                ".tsx": "typescript",
+            }
+            language = language_map.get(suffix, "unknown")
+        
+        result_data = {
+            "file": str(path),
             "language": language,
-            "analysis_type": analysis_type,
-            "issues": [],
-            "metrics": {},
+            "metrics": None,
+            "security_issues": [],
             "recommendations": []
         }
-
-        all_issues = []
-
-        # Complexity analysis
-        if analysis_type in ["complexity", "all"]:
-            complexity_analyzer = ComplexityAnalyzer(code, language)
-            results["metrics"]["cyclomatic_complexity"] = complexity_analyzer.calculate_cyclomatic_complexity()
-            results["metrics"]["loc"] = complexity_analyzer.calculate_loc_metrics()
-            all_issues.extend(complexity_analyzer.find_long_functions())
-
-            # Add complexity warnings
-            cc = results["metrics"]["cyclomatic_complexity"]
-            if cc > 20:
-                all_issues.append(CodeIssue(
-                    severity="high",
-                    category="complexity",
-                    message=f"Very high cyclomatic complexity: {cc}",
-                    suggestion="Consider refactoring to reduce complexity below 20"
-                ))
-            elif cc > 10:
-                all_issues.append(CodeIssue(
-                    severity="medium",
-                    category="complexity",
-                    message=f"High cyclomatic complexity: {cc}",
-                    suggestion="Consider refactoring to reduce complexity"
-                ))
-
-        # Security analysis
-        if analysis_type in ["security", "all"]:
-            security_analyzer = SecurityAnalyzer(code, language)
-            all_issues.extend(security_analyzer.analyze())
-
-        # Performance analysis
-        if analysis_type in ["performance", "all"]:
-            performance_analyzer = PerformanceAnalyzer(code, language)
-            all_issues.extend(performance_analyzer.analyze())
-
-        # Convert issues to dict and calculate score
-        results["issues"] = [issue.to_dict() for issue in all_issues]
-
-        # Calculate overall score (0-100)
-        severity_weights = {"critical": 25, "high": 15, "medium": 5, "low": 2}
-        penalty = sum(severity_weights.get(issue.severity, 0) for issue in all_issues)
-        results["metrics"]["quality_score"] = max(0, 100 - penalty)
-
-        # Generate recommendations
-        severity_count = {"critical": 0, "high": 0, "medium": 0, "low": 0}
-        for issue in all_issues:
-            severity_count[issue.severity] = severity_count.get(issue.severity, 0) + 1
-
-        if severity_count["critical"] > 0:
-            results["recommendations"].append(
-                f"Address {severity_count['critical']} critical issue(s) immediately"
-            )
-        if severity_count["high"] > 0:
-            results["recommendations"].append(
-                f"Review and fix {severity_count['high']} high-severity issue(s)"
-            )
-        if results["metrics"].get("cyclomatic_complexity", 0) > 15:
-            results["recommendations"].append(
-                "Consider breaking down complex functions"
-            )
-        if results["metrics"].get("loc", {}).get("comment_ratio", 0) < 10:
-            results["recommendations"].append(
-                "Consider adding more documentation comments"
-            )
-
-        return ToolResult(
-            status=ToolStatus.SUCCESS,
-            data=results,
-            metadata={
-                "issues_found": len(all_issues),
-                "quality_score": results["metrics"]["quality_score"]
+        
+        # Complexity analysis (Python only for now)
+        if analysis_type in ("complexity", "all") and language == "python":
+            metrics = PythonAnalyzer.analyze_file(content, file_path)
+            result_data["metrics"] = {
+                "total_lines": metrics.total_lines,
+                "code_lines": metrics.code_lines,
+                "comment_lines": metrics.comment_lines,
+                "blank_lines": metrics.blank_lines,
+                "classes": metrics.classes,
+                "imports": metrics.imports,
+                "average_complexity": metrics.average_complexity,
+                "functions": [
+                    {
+                        "name": f.name,
+                        "line_start": f.line_start,
+                        "cyclomatic_complexity": f.cyclomatic_complexity,
+                        "cognitive_complexity": f.cognitive_complexity,
+                        "lines_of_code": f.lines_of_code,
+                        "has_docstring": f.has_docstring
+                    }
+                    for f in metrics.functions
+                ]
             }
+            
+            # Generate recommendations
+            for func in metrics.functions:
+                if func.cyclomatic_complexity > 10:
+                    result_data["recommendations"].append({
+                        "type": "complexity",
+                        "severity": "high" if func.cyclomatic_complexity > 15 else "medium",
+                        "message": f"Function '{func.name}' has high complexity ({func.cyclomatic_complexity}). Consider refactoring.",
+                        "line": func.line_start
+                    })
+                if not func.has_docstring:
+                    result_data["recommendations"].append({
+                        "type": "documentation",
+                        "severity": "low",
+                        "message": f"Function '{func.name}' lacks a docstring.",
+                        "line": func.line_start
+                    })
+                if func.parameters > 5:
+                    result_data["recommendations"].append({
+                        "type": "design",
+                        "severity": "medium",
+                        "message": f"Function '{func.name}' has many parameters ({func.parameters}). Consider using a configuration object.",
+                        "line": func.line_start
+                    })
+        
+        # Security analysis
+        if analysis_type in ("security", "all"):
+            result_data["security_issues"] = SecurityScanner.scan(content, file_path)
+        
+        return ToolResult.success(
+            data=result_data,
+            metadata={"analysis_type": analysis_type, "language": language}
         )
+
+
+# Register the tool
+register_tool(CodeAnalyzerTool())

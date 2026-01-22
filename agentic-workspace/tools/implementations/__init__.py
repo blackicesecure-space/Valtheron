@@ -1,71 +1,45 @@
 """
-Agentic Workspace Tools Package.
-Provides tool implementations for agent operations.
+Tool implementations for the agentic workspace.
+
+This package provides all tool implementations that agents can use.
+Tools are automatically registered with the global registry on import.
 """
-from .base_tool import (
+from .base import (
     BaseTool,
+    ToolParameter,
     ToolResult,
     ToolStatus,
-    ToolParameter,
     ToolRegistry,
-    tool,
-    with_timeout,
-    with_retry
+    get_registry,
+    register_tool,
 )
 
-from .code_analyzer import CodeAnalyzerTool
-from .test_runner import TestRunnerTool
-from .file_operations import (
-    FileReadTool,
-    FileWriteTool,
-    FileSearchTool,
-    GrepTool,
-    FileEditTool
-)
+# Import tool modules to trigger registration
+from . import file_tools
+from . import code_analyzer
+from . import bash_tools
 
 __all__ = [
-    # Base classes
     "BaseTool",
+    "ToolParameter", 
     "ToolResult",
     "ToolStatus",
-    "ToolParameter",
     "ToolRegistry",
-    
-    # Decorators
-    "tool",
-    "with_timeout",
-    "with_retry",
-    
-    # Tool implementations
-    "CodeAnalyzerTool",
-    "TestRunnerTool",
-    "FileReadTool",
-    "FileWriteTool",
-    "FileSearchTool",
-    "GrepTool",
-    "FileEditTool",
+    "get_registry",
+    "register_tool",
 ]
 
 
-def get_tool(name: str, config: dict = None):
-    """
-    Get a tool instance by name.
-    
-    Args:
-        name: Tool name
-        config: Optional tool configuration
-        
-    Returns:
-        Tool instance or None if not found
-    """
-    return ToolRegistry.get_instance(name, config)
+def list_available_tools():
+    """List all registered tools."""
+    return get_registry().list_tools()
 
 
-def list_tools() -> list[str]:
-    """List all available tool names."""
-    return ToolRegistry.list_tools()
+def get_tool(name: str):
+    """Get a tool by name."""
+    return get_registry().get(name)
 
 
-def get_all_tool_schemas() -> list[dict]:
-    """Get JSON schemas for all registered tools."""
-    return ToolRegistry.get_all_schemas()
+def execute_tool(name: str, **kwargs) -> ToolResult:
+    """Execute a tool by name with given parameters."""
+    return get_registry().execute(name, **kwargs)
