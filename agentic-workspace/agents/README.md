@@ -1,52 +1,117 @@
-# Agents Directory
+# Valtheron Agent Collection
 
-This directory contains agent configurations and definitions for the agentic workspace.
+Dieses Paket enthält 200 spezialisierte Agenten für das Valtheron-Framework, konvertiert aus ChatGPT Custom Personas.
 
-## Structure
+## Übersicht
 
-- `agent-config.schema.json` - JSON schema defining the structure for agent configurations
-- `example-*.json` - Example agent configurations demonstrating different agent types
-- Custom agent configurations should follow the schema defined in `agent-config.schema.json`
+**Gesamtzahl:** 200 Agenten
+**Kategorien:** 10 (je 20 Agenten)
+**ID-Schema:** VLT-[KATEGORIE]-[HASH] (z.B. VLT-GES-FB22)
 
-## Agent Types
+## Kategorien
 
-### Task Executor
-- **Purpose**: Execute specific tasks, run code, manage files
-- **Use cases**: Code generation, file operations, command execution
-- **Example**: `example-task-executor.json`
+| Code | Kategorie | Modell | Beschreibung |
+|------|-----------|--------|--------------|
+| GES | Gesundheitsexperten | claude-opus-4-5 | Fitness, Wellness, Therapie |
+| ANA | Analytiker | claude-opus-4-5 | Datenanalyse, Research |
+| MKT | Marketer | claude-sonnet-4-5 | Marketing, Branding |
+| PRO | Produzent | claude-sonnet-4-5 | Produktion, Logistik |
+| ENT | Entrepreneur | claude-opus-4-5 | Unternehmensgründung |
+| ETR | Entertainer | claude-sonnet-4-5 | Kreative Berufe |
+| LEH | Lehrer | claude-sonnet-4-5 | Bildung, Training |
+| SCH | Schriftsteller | claude-opus-4-5 | Content, Texte |
+| ECO | E-Commerce | claude-sonnet-4-5 | Online-Handel |
+| DEV | Entwickler | claude-sonnet-4-5 | Software, Tech |
 
-### Researcher
-- **Purpose**: Gather information, analyze codebases, synthesize findings
-- **Use cases**: Code exploration, documentation lookup, pattern analysis
-- **Example**: `example-researcher.json`
+## Verzeichnisstruktur
 
-### Planner
-- **Purpose**: Break down complex tasks into manageable steps
-- **Use cases**: Project planning, task decomposition, architecture design
+```
+agents/
+├── agent-index.json      # Index aller Agenten
+├── GES/                  # Gesundheitsexperten
+│   ├── VLT-GES-FB22.json
+│   ├── VLT-GES-8CB4.json
+│   └── ...
+├── ANA/                  # Analytiker
+├── MKT/                  # Marketer
+├── PRO/                  # Produzent
+├── ENT/                  # Entrepreneur
+├── ETR/                  # Entertainer
+├── LEH/                  # Lehrer
+├── SCH/                  # Schriftsteller
+├── ECO/                  # E-Commerce
+└── DEV/                  # Entwickler
+```
 
-### Reviewer
-- **Purpose**: Review code, documentation, and outputs for quality
-- **Use cases**: Code review, security analysis, quality assurance
+## Agent-Konfiguration (Beispiel)
 
-### Coordinator
-- **Purpose**: Orchestrate multiple agents to work together
-- **Use cases**: Multi-agent workflows, task delegation, result aggregation
+```json
+{
+  "id": "VLT-GES-FB22",
+  "name": "fitness-app-entwickler",
+  "display_name": "Fitness-App-Entwickler",
+  "type": "specialist",
+  "version": "1.0.0",
+  "category": "Gesundheitsexperten",
+  "description": "Entwickelt mobile Apps...",
+  "model": {
+    "provider": "anthropic",
+    "name": "claude-opus-4-5-20251101",
+    "temperature": 0.7,
+    "max_tokens": 4096
+  },
+  "system_prompt": "Du bist Fitness-App-Entwickler...",
+  "capabilities": ["health-consulting", "wellness-planning"],
+  "tools": ["read", "write", "glob", "grep"],
+  "config": {
+    "max_retries": 3,
+    "timeout_seconds": 300,
+    "language": "de"
+  }
+}
+```
 
-## Creating a New Agent
+## Installation
 
-1. Copy one of the example configurations
-2. Modify the fields according to your needs
-3. Ensure it validates against `agent-config.schema.json`
-4. Document the agent's specific capabilities and use cases
+Kopieren Sie den gesamten `agents/` Ordner in Ihr Valtheron-Projekt:
 
-## Configuration Fields
+```
+Valtheron/
+└── agentic-workspace/
+    └── agents/
+        ├── agent-index.json
+        ├── GES/
+        ├── ANA/
+        └── ...
+```
 
-- **name**: Unique identifier for the agent
-- **type**: Agent category (task-executor, researcher, planner, reviewer, coordinator)
-- **version**: Semantic version (e.g., 1.0.0)
-- **description**: Detailed explanation of what the agent does
-- **model**: AI model configuration (provider, name, temperature, max_tokens)
-- **tools**: List of tools the agent can access
-- **capabilities**: List of capabilities the agent provides
-- **dependencies**: Other agents this agent relies on
-- **config**: Agent-specific configuration options
+## Verwendung mit der CLI
+
+Nach der Installation können Sie die Agenten über die CLI verwenden:
+
+```bash
+# Alle Agenten auflisten
+py cli/valtheron.py agent list
+
+# Einen bestimmten Agenten verwenden
+py cli/valtheron.py agent run task --agent VLT-GES-FB22 --params '{"query": "..."}'
+```
+
+## Agent-Index
+
+Die Datei `agent-index.json` enthält einen vollständigen Index aller Agenten mit ID, Name, Kategorie und Dateipfad für programmatischen Zugriff.
+
+## ID-Verschlüsselung
+
+Die Agent-IDs sind bewusst nicht sequentiell nummeriert, sondern verwenden ein Hash-basiertes Schema für mehr Sicherheit und Flexibilität. Das Format ist `VLT-[KAT]-[HASH]`, wobei KAT ein 3-Buchstaben-Kategorie-Code und HASH ein 4-stelliger alphanumerischer Code ist.
+
+## Metadaten
+
+Jeder Agent enthält Metadaten über seine Herkunft:
+- `source`: "ChatGPT-Personas-Import"
+- `original_number`: Die ursprüngliche Nummer aus der Quelldatei
+- `imported_at`: Importdatum
+
+## Lizenz
+
+Diese Agenten-Konfigurationen sind Teil des Valtheron-Projekts.

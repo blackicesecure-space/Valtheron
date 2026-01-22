@@ -1,0 +1,1468 @@
+{
+  "version": "1.0.0",
+  "total_agents": 200,
+  "categories": {
+    "Gesundheitsexperten": {
+      "code": "GES",
+      "count": 20,
+      "agents": [
+        "VLT-GES-FB22",
+        "VLT-GES-8CB4",
+        "VLT-GES-0FAD",
+        "VLT-GES-53D8",
+        "VLT-GES-CA93",
+        "VLT-GES-1965",
+        "VLT-GES-5952",
+        "VLT-GES-3390",
+        "VLT-GES-D3D2",
+        "VLT-GES-DE2B",
+        "VLT-GES-3047",
+        "VLT-GES-64DA",
+        "VLT-GES-2382",
+        "VLT-GES-BF1A",
+        "VLT-GES-4D29",
+        "VLT-GES-F034",
+        "VLT-GES-14BC",
+        "VLT-GES-573D",
+        "VLT-GES-EB90",
+        "VLT-GES-9E00"
+      ]
+    },
+    "Analytiker": {
+      "code": "ANA",
+      "count": 20,
+      "agents": [
+        "VLT-ANA-70D2",
+        "VLT-ANA-0013",
+        "VLT-ANA-D4C5",
+        "VLT-ANA-1479",
+        "VLT-ANA-EBF7",
+        "VLT-ANA-DD22",
+        "VLT-ANA-415F",
+        "VLT-ANA-D365",
+        "VLT-ANA-8B8E",
+        "VLT-ANA-0F8D",
+        "VLT-ANA-6AEA",
+        "VLT-ANA-ECBE",
+        "VLT-ANA-1922",
+        "VLT-ANA-9055",
+        "VLT-ANA-D54A",
+        "VLT-ANA-4B7D",
+        "VLT-ANA-9B9A",
+        "VLT-ANA-3CB6",
+        "VLT-ANA-9BA4",
+        "VLT-ANA-24DF"
+      ]
+    },
+    "Marketer": {
+      "code": "MKT",
+      "count": 20,
+      "agents": [
+        "VLT-MKT-7D18",
+        "VLT-MKT-B945",
+        "VLT-MKT-D06A",
+        "VLT-MKT-8DA1",
+        "VLT-MKT-EB9A",
+        "VLT-MKT-543C",
+        "VLT-MKT-4B68",
+        "VLT-MKT-E82D",
+        "VLT-MKT-1C38",
+        "VLT-MKT-C71A",
+        "VLT-MKT-FAB8",
+        "VLT-MKT-6F71",
+        "VLT-MKT-AB5A",
+        "VLT-MKT-0E18",
+        "VLT-MKT-4DEE",
+        "VLT-MKT-1BAA",
+        "VLT-MKT-A8BF",
+        "VLT-MKT-BD05",
+        "VLT-MKT-78F8",
+        "VLT-MKT-BAAB"
+      ]
+    },
+    "Produzent": {
+      "code": "PRO",
+      "count": 20,
+      "agents": [
+        "VLT-PRO-8A78",
+        "VLT-PRO-1E1C",
+        "VLT-PRO-BE65",
+        "VLT-PRO-B842",
+        "VLT-PRO-C459",
+        "VLT-PRO-A0B9",
+        "VLT-PRO-8B45",
+        "VLT-PRO-5FE8",
+        "VLT-PRO-1E8D",
+        "VLT-PRO-4DC6",
+        "VLT-PRO-7ED8",
+        "VLT-PRO-312A",
+        "VLT-PRO-08D7",
+        "VLT-PRO-E520",
+        "VLT-PRO-F1AD",
+        "VLT-PRO-B81A",
+        "VLT-PRO-E336",
+        "VLT-PRO-CE36",
+        "VLT-PRO-B42F",
+        "VLT-PRO-BDB4"
+      ]
+    },
+    "Entrepreneur": {
+      "code": "ENT",
+      "count": 20,
+      "agents": [
+        "VLT-ENT-31C2",
+        "VLT-ENT-16CA",
+        "VLT-ENT-600A",
+        "VLT-ENT-DE1C",
+        "VLT-ENT-5D5D",
+        "VLT-ENT-1DCF",
+        "VLT-ENT-9821",
+        "VLT-ENT-D7BB",
+        "VLT-ENT-A0C0",
+        "VLT-ENT-2748",
+        "VLT-ENT-C86F",
+        "VLT-ENT-E01A",
+        "VLT-ENT-7763",
+        "VLT-ENT-7510",
+        "VLT-ENT-D1CA",
+        "VLT-ENT-0BE9",
+        "VLT-ENT-FD9E",
+        "VLT-ENT-74DA",
+        "VLT-ENT-0DB4",
+        "VLT-ENT-9B11"
+      ]
+    },
+    "Entertainer": {
+      "code": "ETR",
+      "count": 20,
+      "agents": [
+        "VLT-ETR-DB68",
+        "VLT-ETR-F5D1",
+        "VLT-ETR-80DA",
+        "VLT-ETR-CD9D",
+        "VLT-ETR-9324",
+        "VLT-ETR-F704",
+        "VLT-ETR-058B",
+        "VLT-ETR-DE06",
+        "VLT-ETR-232D",
+        "VLT-ETR-EE07",
+        "VLT-ETR-88A5",
+        "VLT-ETR-4571",
+        "VLT-ETR-FC81",
+        "VLT-ETR-F1C3",
+        "VLT-ETR-E6CD",
+        "VLT-ETR-92DF",
+        "VLT-ETR-D99D",
+        "VLT-ETR-D82D",
+        "VLT-ETR-6CB9",
+        "VLT-ETR-F3E5"
+      ]
+    },
+    "Lehrer": {
+      "code": "LEH",
+      "count": 20,
+      "agents": [
+        "VLT-LEH-BD1F",
+        "VLT-LEH-1B75",
+        "VLT-LEH-EF65",
+        "VLT-LEH-A8C4",
+        "VLT-LEH-D3DF",
+        "VLT-LEH-C95C",
+        "VLT-LEH-268F",
+        "VLT-LEH-4E06",
+        "VLT-LEH-FF14",
+        "VLT-LEH-3D7A",
+        "VLT-LEH-F752",
+        "VLT-LEH-2935",
+        "VLT-LEH-2C24",
+        "VLT-LEH-447F",
+        "VLT-LEH-EDCF",
+        "VLT-LEH-B7ED",
+        "VLT-LEH-EA3B",
+        "VLT-LEH-E294",
+        "VLT-LEH-566B",
+        "VLT-LEH-FA07"
+      ]
+    },
+    "Schriftsteller": {
+      "code": "SCH",
+      "count": 20,
+      "agents": [
+        "VLT-SCH-FD62",
+        "VLT-SCH-50C2",
+        "VLT-SCH-69AE",
+        "VLT-SCH-7FF3",
+        "VLT-SCH-8B5C",
+        "VLT-SCH-288B",
+        "VLT-SCH-5E6F",
+        "VLT-SCH-C4B7",
+        "VLT-SCH-68DF",
+        "VLT-SCH-DB33",
+        "VLT-SCH-5FDF",
+        "VLT-SCH-421A",
+        "VLT-SCH-D243",
+        "VLT-SCH-2875",
+        "VLT-SCH-9800",
+        "VLT-SCH-4F32",
+        "VLT-SCH-B64D",
+        "VLT-SCH-A4BF",
+        "VLT-SCH-D291",
+        "VLT-SCH-370B"
+      ]
+    },
+    "E-Commerce": {
+      "code": "ECO",
+      "count": 20,
+      "agents": [
+        "VLT-ECO-3E66",
+        "VLT-ECO-8368",
+        "VLT-ECO-3069",
+        "VLT-ECO-AF58",
+        "VLT-ECO-7E43",
+        "VLT-ECO-4FE0",
+        "VLT-ECO-B75D",
+        "VLT-ECO-08E7",
+        "VLT-ECO-4F14",
+        "VLT-ECO-38DB",
+        "VLT-ECO-CF00",
+        "VLT-ECO-9185",
+        "VLT-ECO-D0B7",
+        "VLT-ECO-CAFA",
+        "VLT-ECO-49BD",
+        "VLT-ECO-0B3B",
+        "VLT-ECO-2BF8",
+        "VLT-ECO-98EB",
+        "VLT-ECO-A83F",
+        "VLT-ECO-8C7E"
+      ]
+    },
+    "Entwickler": {
+      "code": "DEV",
+      "count": 20,
+      "agents": [
+        "VLT-DEV-B380",
+        "VLT-DEV-A74B",
+        "VLT-DEV-4AD7",
+        "VLT-DEV-3CD8",
+        "VLT-DEV-99CD",
+        "VLT-DEV-A63B",
+        "VLT-DEV-4921",
+        "VLT-DEV-5F80",
+        "VLT-DEV-AAD9",
+        "VLT-DEV-F727",
+        "VLT-DEV-0379",
+        "VLT-DEV-7736",
+        "VLT-DEV-7A13",
+        "VLT-DEV-EEBF",
+        "VLT-DEV-D30C",
+        "VLT-DEV-CBD7",
+        "VLT-DEV-A592",
+        "VLT-DEV-3030",
+        "VLT-DEV-6B56",
+        "VLT-DEV-7DF6"
+      ]
+    }
+  },
+  "agents": [
+    {
+      "id": "VLT-GES-FB22",
+      "name": "Fitness-App-Entwickler",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-FB22.json"
+    },
+    {
+      "id": "VLT-ANA-70D2",
+      "name": "HR-Analyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-70D2.json"
+    },
+    {
+      "id": "VLT-MKT-7D18",
+      "name": "Growth-Hacker",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-7D18.json"
+    },
+    {
+      "id": "VLT-MKT-B945",
+      "name": "Markenstratege",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-B945.json"
+    },
+    {
+      "id": "VLT-PRO-8A78",
+      "name": "Industriehygieniker",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-8A78.json"
+    },
+    {
+      "id": "VLT-ENT-31C2",
+      "name": "Agrarunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-31C2.json"
+    },
+    {
+      "id": "VLT-MKT-D06A",
+      "name": "Digital Marketer",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-D06A.json"
+    },
+    {
+      "id": "VLT-ETR-DB68",
+      "name": "Musiktherapeut",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-DB68.json"
+    },
+    {
+      "id": "VLT-ANA-0013",
+      "name": "Marktforscher",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-0013.json"
+    },
+    {
+      "id": "VLT-LEH-BD1F",
+      "name": "Mathematiklehrer an einer weiterführenden Schule",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-BD1F.json"
+    },
+    {
+      "id": "VLT-ETR-F5D1",
+      "name": "Spieledesigner",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-F5D1.json"
+    },
+    {
+      "id": "VLT-SCH-FD62",
+      "name": "Texter für Tech-Startups",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-FD62.json"
+    },
+    {
+      "id": "VLT-SCH-50C2",
+      "name": "Redenschreiber-für-Politiker",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-50C2.json"
+    },
+    {
+      "id": "VLT-ANA-D4C5",
+      "name": "Einzelhandelsanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-D4C5.json"
+    },
+    {
+      "id": "VLT-ECO-3E66",
+      "name": "Logistikkoordinator",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-3E66.json"
+    },
+    {
+      "id": "VLT-ANA-1479",
+      "name": "Pharmazeutischer Analyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-1479.json"
+    },
+    {
+      "id": "VLT-ENT-16CA",
+      "name": "Immobilienunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-16CA.json"
+    },
+    {
+      "id": "VLT-ANA-EBF7",
+      "name": "Stadtplaner",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-EBF7.json"
+    },
+    {
+      "id": "VLT-ENT-600A",
+      "name": "Modeunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-600A.json"
+    },
+    {
+      "id": "VLT-ECO-8368",
+      "name": "Kundendienstvertretung",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-8368.json"
+    },
+    {
+      "id": "VLT-LEH-1B75",
+      "name": "Berater",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-1B75.json"
+    },
+    {
+      "id": "VLT-ANA-DD22",
+      "name": "Supply-Chain-Analyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-DD22.json"
+    },
+    {
+      "id": "VLT-SCH-69AE",
+      "name": "Biograph",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-69AE.json"
+    },
+    {
+      "id": "VLT-ANA-415F",
+      "name": "Transportanalytiker",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-415F.json"
+    },
+    {
+      "id": "VLT-MKT-8DA1",
+      "name": "Spezialist für Marketingautomatisierung",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-8DA1.json"
+    },
+    {
+      "id": "VLT-ANA-D365",
+      "name": "Cybersicherheitsanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-D365.json"
+    },
+    {
+      "id": "VLT-DEV-B380",
+      "name": "Spieleentwickler",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-B380.json"
+    },
+    {
+      "id": "VLT-ENT-DE1C",
+      "name": "Franchise-Inhaber",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-DE1C.json"
+    },
+    {
+      "id": "VLT-DEV-A74B",
+      "name": "SEO-Spezialist",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-A74B.json"
+    },
+    {
+      "id": "VLT-MKT-EB9A",
+      "name": "Community-Manager",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-EB9A.json"
+    },
+    {
+      "id": "VLT-ANA-8B8E",
+      "name": "Politischer Datenanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-8B8E.json"
+    },
+    {
+      "id": "VLT-DEV-4AD7",
+      "name": "DevOps-Ingenieur",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-4AD7.json"
+    },
+    {
+      "id": "VLT-DEV-3CD8",
+      "name": "Cyber-Security-Analytiker",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-3CD8.json"
+    },
+    {
+      "id": "VLT-PRO-1E1C",
+      "name": "Spezialist für Lean Manufacturing",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-1E1C.json"
+    },
+    {
+      "id": "VLT-ETR-80DA",
+      "name": "Künstler für visuelle Effekte",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-80DA.json"
+    },
+    {
+      "id": "VLT-PRO-BE65",
+      "name": "Logistikkoordinator",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-BE65.json"
+    },
+    {
+      "id": "VLT-ECO-3069",
+      "name": "Lagerhausmanager",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-3069.json"
+    },
+    {
+      "id": "VLT-ECO-AF58",
+      "name": "Kurator der Abonnementbox",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-AF58.json"
+    },
+    {
+      "id": "VLT-PRO-B842",
+      "name": "Sicherheitsbeauftragter",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-B842.json"
+    },
+    {
+      "id": "VLT-ETR-CD9D",
+      "name": "Komiker",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-CD9D.json"
+    },
+    {
+      "id": "VLT-GES-8CB4",
+      "name": "Sporternährungsberater",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-8CB4.json"
+    },
+    {
+      "id": "VLT-SCH-7FF3",
+      "name": "Drehbuchautor für Comedy-Shows",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-7FF3.json"
+    },
+    {
+      "id": "VLT-GES-0FAD",
+      "name": "Fitnessstudiobesitzer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-0FAD.json"
+    },
+    {
+      "id": "VLT-MKT-543C",
+      "name": "Content-Vermarkter",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-543C.json"
+    },
+    {
+      "id": "VLT-DEV-99CD",
+      "name": "Entwickler für Benutzeroberflächen",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-99CD.json"
+    },
+    {
+      "id": "VLT-PRO-C459",
+      "name": "Verpackungsingenieur",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-C459.json"
+    },
+    {
+      "id": "VLT-PRO-A0B9",
+      "name": "Spezialist für Arbeitsbeziehungen",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-A0B9.json"
+    },
+    {
+      "id": "VLT-ANA-0F8D",
+      "name": "Immobilienanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-0F8D.json"
+    },
+    {
+      "id": "VLT-GES-53D8",
+      "name": "Sportgerätedesigner",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-53D8.json"
+    },
+    {
+      "id": "VLT-ANA-6AEA",
+      "name": "Bildungsanalytiker",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-6AEA.json"
+    },
+    {
+      "id": "VLT-DEV-A63B",
+      "name": "Back-End-Entwickler",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-A63B.json"
+    },
+    {
+      "id": "VLT-GES-CA93",
+      "name": "Sportjournalist",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-CA93.json"
+    },
+    {
+      "id": "VLT-ECO-7E43",
+      "name": "Online-Shop-Manager",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-7E43.json"
+    },
+    {
+      "id": "VLT-ENT-5D5D",
+      "name": "Fitness-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-5D5D.json"
+    },
+    {
+      "id": "VLT-PRO-8B45",
+      "name": "Hausmeister",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-8B45.json"
+    },
+    {
+      "id": "VLT-DEV-4921",
+      "name": "Netzwerktechniker",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-4921.json"
+    },
+    {
+      "id": "VLT-ECO-4FE0",
+      "name": "E-Commerce-Analyst",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-4FE0.json"
+    },
+    {
+      "id": "VLT-ENT-1DCF",
+      "name": "Lifestyle-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-1DCF.json"
+    },
+    {
+      "id": "VLT-ECO-B75D",
+      "name": "Spezialist für Einzelhandelsmarketing",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-B75D.json"
+    },
+    {
+      "id": "VLT-ANA-ECBE",
+      "name": "Klimadatenanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-ECBE.json"
+    },
+    {
+      "id": "VLT-PRO-5FE8",
+      "name": "Einkaufsleiter",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-5FE8.json"
+    },
+    {
+      "id": "VLT-MKT-4B68",
+      "name": "Spezialist für mobiles Marketing",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-4B68.json"
+    },
+    {
+      "id": "VLT-ENT-9821",
+      "name": "Green-Tech-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-9821.json"
+    },
+    {
+      "id": "VLT-ECO-08E7",
+      "name": "Visual-Merchandiser",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-08E7.json"
+    },
+    {
+      "id": "VLT-MKT-E82D",
+      "name": "E-Commerce-Vermarkter",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-E82D.json"
+    },
+    {
+      "id": "VLT-GES-1965",
+      "name": "Sportpsychologe",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-1965.json"
+    },
+    {
+      "id": "VLT-ENT-D7BB",
+      "name": "Unternehmer-für-Veranstaltungsplanung",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-D7BB.json"
+    },
+    {
+      "id": "VLT-LEH-EF65",
+      "name": "Schulpsychologe",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-EF65.json"
+    },
+    {
+      "id": "VLT-GES-5952",
+      "name": "Manager eines Fitnessstudios",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-5952.json"
+    },
+    {
+      "id": "VLT-ECO-4F14",
+      "name": "Einzelhandelskauffrau",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-4F14.json"
+    },
+    {
+      "id": "VLT-ENT-A0C0",
+      "name": "Food-Truck-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-A0C0.json"
+    },
+    {
+      "id": "VLT-LEH-A8C4",
+      "name": "Schulleiter",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-A8C4.json"
+    },
+    {
+      "id": "VLT-ECO-38DB",
+      "name": "E-Commerce-Berater",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-38DB.json"
+    },
+    {
+      "id": "VLT-ETR-9324",
+      "name": "Drehbuchautor",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-9324.json"
+    },
+    {
+      "id": "VLT-MKT-1C38",
+      "name": "Produktvermarkter",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-1C38.json"
+    },
+    {
+      "id": "VLT-ENT-2748",
+      "name": "CEO eines Early-Stage-Tech-Startups",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-2748.json"
+    },
+    {
+      "id": "VLT-SCH-8B5C",
+      "name": "Dichter",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-8B5C.json"
+    },
+    {
+      "id": "VLT-LEH-D3DF",
+      "name": "Spezialist-für-Kunstpädagogik",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-D3DF.json"
+    },
+    {
+      "id": "VLT-SCH-288B",
+      "name": "Reiseblogs",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-288B.json"
+    },
+    {
+      "id": "VLT-ANA-1922",
+      "name": "Social-Media-Analyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-1922.json"
+    },
+    {
+      "id": "VLT-GES-3390",
+      "name": "Freizeittherapeut",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-3390.json"
+    },
+    {
+      "id": "VLT-SCH-5E6F",
+      "name": "Sportjournalist",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-5E6F.json"
+    },
+    {
+      "id": "VLT-DEV-5F80",
+      "name": "Cloud-Architekt",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-5F80.json"
+    },
+    {
+      "id": "VLT-ETR-F704",
+      "name": "Regisseur",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-F704.json"
+    },
+    {
+      "id": "VLT-ENT-C86F",
+      "name": "Geschäftsinhaber, der zu Hause ansässig ist",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-C86F.json"
+    },
+    {
+      "id": "VLT-DEV-AAD9",
+      "name": "UI/UX-Designer",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-AAD9.json"
+    },
+    {
+      "id": "VLT-DEV-F727",
+      "name": "IT-Support-Spezialist",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-F727.json"
+    },
+    {
+      "id": "VLT-ETR-058B",
+      "name": "Tanzchoreograf",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-058B.json"
+    },
+    {
+      "id": "VLT-GES-D3D2",
+      "name": "Kraft- und Konditionstrainer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-D3D2.json"
+    },
+    {
+      "id": "VLT-ENT-E01A",
+      "name": "E-Commerce-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-E01A.json"
+    },
+    {
+      "id": "VLT-ECO-CF00",
+      "name": "E-Commerce-SEO-Spezialist",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-CF00.json"
+    },
+    {
+      "id": "VLT-ECO-9185",
+      "name": "Supply-Chain-Analyst",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-9185.json"
+    },
+    {
+      "id": "VLT-GES-DE2B",
+      "name": "Physiotherapeut",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-DE2B.json"
+    },
+    {
+      "id": "VLT-SCH-C4B7",
+      "name": "Dramatiker",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-C4B7.json"
+    },
+    {
+      "id": "VLT-DEV-0379",
+      "name": "Entwickler mobiler Apps",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-0379.json"
+    },
+    {
+      "id": "VLT-ETR-DE06",
+      "name": "Animator",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-DE06.json"
+    },
+    {
+      "id": "VLT-SCH-68DF",
+      "name": "Redaktioneller Autor für Zeitungen",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-68DF.json"
+    },
+    {
+      "id": "VLT-DEV-7736",
+      "name": "Produktmanager",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-7736.json"
+    },
+    {
+      "id": "VLT-LEH-C95C",
+      "name": "Koordinatorin-für-Erwachsenenbildung",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-C95C.json"
+    },
+    {
+      "id": "VLT-ECO-D0B7",
+      "name": "Produktfotograf",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-D0B7.json"
+    },
+    {
+      "id": "VLT-GES-3047",
+      "name": "Schwimmlehrer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-3047.json"
+    },
+    {
+      "id": "VLT-ENT-7763",
+      "name": "Erbe des Familienunternehmens",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-7763.json"
+    },
+    {
+      "id": "VLT-ANA-9055",
+      "name": "Agrardatenanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-9055.json"
+    },
+    {
+      "id": "VLT-ECO-CAFA",
+      "name": "Produktbeschreibungsautor",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-CAFA.json"
+    },
+    {
+      "id": "VLT-SCH-DB33",
+      "name": "Autor historischer Belletristik",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-DB33.json"
+    },
+    {
+      "id": "VLT-GES-64DA",
+      "name": "Sporttrainer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-64DA.json"
+    },
+    {
+      "id": "VLT-ECO-49BD",
+      "name": "Filialleiter",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-49BD.json"
+    },
+    {
+      "id": "VLT-DEV-7A13",
+      "name": "SWQA Engineer",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-7A13.json"
+    },
+    {
+      "id": "VLT-ANA-D54A",
+      "name": "Tourismusanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-D54A.json"
+    },
+    {
+      "id": "VLT-ETR-232D",
+      "name": "Filmkritik",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-232D.json"
+    },
+    {
+      "id": "VLT-LEH-268F",
+      "name": "Lehrer für Sprachkunst",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-268F.json"
+    },
+    {
+      "id": "VLT-PRO-1E8D",
+      "name": "Wartungsmanager",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-1E8D.json"
+    },
+    {
+      "id": "VLT-MKT-C71A",
+      "name": "Affiliate-Vermarkter",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-C71A.json"
+    },
+    {
+      "id": "VLT-DEV-EEBF",
+      "name": "Datenwissenschaftler",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-EEBF.json"
+    },
+    {
+      "id": "VLT-PRO-4DC6",
+      "name": "Produktionsplaner",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-4DC6.json"
+    },
+    {
+      "id": "VLT-MKT-FAB8",
+      "name": "Marktforscher",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-FAB8.json"
+    },
+    {
+      "id": "VLT-GES-2382",
+      "name": "Marathontrainer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-2382.json"
+    },
+    {
+      "id": "VLT-DEV-D30C",
+      "name": "VR/AR-Entwickler",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-D30C.json"
+    },
+    {
+      "id": "VLT-DEV-CBD7",
+      "name": "Systemanalytiker",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-CBD7.json"
+    },
+    {
+      "id": "VLT-LEH-4E06",
+      "name": "Lernunterstützungsassistent",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-4E06.json"
+    },
+    {
+      "id": "VLT-GES-BF1A",
+      "name": "Sportagent",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-BF1A.json"
+    },
+    {
+      "id": "VLT-MKT-6F71",
+      "name": "Videomarketing-Stratege",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-6F71.json"
+    },
+    {
+      "id": "VLT-DEV-A592",
+      "name": "Ingenieur für maschinelles Lernen",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-A592.json"
+    },
+    {
+      "id": "VLT-PRO-7ED8",
+      "name": "Energiemanager",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-7ED8.json"
+    },
+    {
+      "id": "VLT-ECO-0B3B",
+      "name": "Einzelhandel Käufer",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-0B3B.json"
+    },
+    {
+      "id": "VLT-ENT-7510",
+      "name": "Serienunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-7510.json"
+    },
+    {
+      "id": "VLT-GES-4D29",
+      "name": "Sportlehrer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-4D29.json"
+    },
+    {
+      "id": "VLT-SCH-5FDF",
+      "name": "Ghostwriter für Memoiren",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-5FDF.json"
+    },
+    {
+      "id": "VLT-ETR-EE07",
+      "name": "Konzertveranstalter",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-EE07.json"
+    },
+    {
+      "id": "VLT-ANA-4B7D",
+      "name": "Kulturdatenanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-4B7D.json"
+    },
+    {
+      "id": "VLT-SCH-421A",
+      "name": "Kinderbuchautor",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-421A.json"
+    },
+    {
+      "id": "VLT-MKT-AB5A",
+      "name": "PR-Spezialist",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-AB5A.json"
+    },
+    {
+      "id": "VLT-MKT-0E18",
+      "name": "Customer-Experience-Manager",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-0E18.json"
+    },
+    {
+      "id": "VLT-ECO-2BF8",
+      "name": "Modehändler",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-2BF8.json"
+    },
+    {
+      "id": "VLT-GES-F034",
+      "name": "Outdoor-Abenteuerführer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-F034.json"
+    },
+    {
+      "id": "VLT-DEV-3030",
+      "name": "Blockchain-Entwickler",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-3030.json"
+    },
+    {
+      "id": "VLT-ENT-D1CA",
+      "name": "Aus Freiberufler wurde Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-D1CA.json"
+    },
+    {
+      "id": "VLT-ANA-9B9A",
+      "name": "Energieanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-9B9A.json"
+    },
+    {
+      "id": "VLT-PRO-312A",
+      "name": "Industriedesigner",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-312A.json"
+    },
+    {
+      "id": "VLT-SCH-D243",
+      "name": "Wissenschaftsautor",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-D243.json"
+    },
+    {
+      "id": "VLT-ETR-88A5",
+      "name": "Kostümbildnerin",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-88A5.json"
+    },
+    {
+      "id": "VLT-ETR-4571",
+      "name": "Theaterdirektor",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-4571.json"
+    },
+    {
+      "id": "VLT-SCH-2875",
+      "name": "Science-Fiction-Romanautor",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-2875.json"
+    },
+    {
+      "id": "VLT-GES-14BC",
+      "name": "Tanzlehrer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-14BC.json"
+    },
+    {
+      "id": "VLT-SCH-9800",
+      "name": "Technischer Redakteur für Softwareunternehmen",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-9800.json"
+    },
+    {
+      "id": "VLT-PRO-08D7",
+      "name": "Supply-Chain-Manager",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-08D7.json"
+    },
+    {
+      "id": "VLT-MKT-4DEE",
+      "name": "Social-Media-Manager",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-4DEE.json"
+    },
+    {
+      "id": "VLT-PRO-E520",
+      "name": "Arbeitspsychologe",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-E520.json"
+    },
+    {
+      "id": "VLT-GES-573D",
+      "name": "Yogalehrer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-573D.json"
+    },
+    {
+      "id": "VLT-ETR-FC81",
+      "name": "Musikproduzent",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-FC81.json"
+    },
+    {
+      "id": "VLT-MKT-1BAA",
+      "name": "Influencer-Vermarkter",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-1BAA.json"
+    },
+    {
+      "id": "VLT-ENT-0BE9",
+      "name": "CEO einer Beratungsagentur",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-0BE9.json"
+    },
+    {
+      "id": "VLT-SCH-4F32",
+      "name": "Stipendiat-für-gemeinnützige-Organisationen",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-4F32.json"
+    },
+    {
+      "id": "VLT-ETR-F1C3",
+      "name": "Koordinator für Veranstaltungen",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-F1C3.json"
+    },
+    {
+      "id": "VLT-PRO-F1AD",
+      "name": "Lagerhausmanager",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-F1AD.json"
+    },
+    {
+      "id": "VLT-ETR-E6CD",
+      "name": "Museumskurator",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-E6CD.json"
+    },
+    {
+      "id": "VLT-ETR-92DF",
+      "name": "Podcast-Moderator",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-92DF.json"
+    },
+    {
+      "id": "VLT-LEH-FF14",
+      "name": "Schauspiellehrer",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-FF14.json"
+    },
+    {
+      "id": "VLT-MKT-A8BF",
+      "name": "Event-Marketing-Manager",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-A8BF.json"
+    },
+    {
+      "id": "VLT-DEV-6B56",
+      "name": "Datenbankadministrator",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-6B56.json"
+    },
+    {
+      "id": "VLT-ETR-D99D",
+      "name": "Maskenbildner",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-D99D.json"
+    },
+    {
+      "id": "VLT-PRO-B81A",
+      "name": "Prozessingenieur",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-B81A.json"
+    },
+    {
+      "id": "VLT-MKT-BD05",
+      "name": "SEO-Spezialist",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-BD05.json"
+    },
+    {
+      "id": "VLT-ETR-D82D",
+      "name": "Rundfunksprecher/Journalist",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-D82D.json"
+    },
+    {
+      "id": "VLT-MKT-78F8",
+      "name": "E-Mail-Marketing-Spezialist",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-78F8.json"
+    },
+    {
+      "id": "VLT-LEH-3D7A",
+      "name": "Direktor des MINT-Programms",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-3D7A.json"
+    },
+    {
+      "id": "VLT-LEH-F752",
+      "name": "Musiklehrer",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-F752.json"
+    },
+    {
+      "id": "VLT-LEH-2935",
+      "name": "Bibliothekar",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-2935.json"
+    },
+    {
+      "id": "VLT-ECO-98EB",
+      "name": "Online-Marktplatzverkäufer",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-98EB.json"
+    },
+    {
+      "id": "VLT-PRO-E336",
+      "name": "Qualitätskontroll-Inspekteur",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-E336.json"
+    },
+    {
+      "id": "VLT-ANA-3CB6",
+      "name": "Finanzanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-3CB6.json"
+    },
+    {
+      "id": "VLT-ECO-A83F",
+      "name": "Lagerverwalter",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-A83F.json"
+    },
+    {
+      "id": "VLT-GES-EB90",
+      "name": "Boxlehrer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-EB90.json"
+    },
+    {
+      "id": "VLT-ETR-6CB9",
+      "name": "Talentagent",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-6CB9.json"
+    },
+    {
+      "id": "VLT-LEH-2C24",
+      "name": "Koordinator für Online-Lernen",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-2C24.json"
+    },
+    {
+      "id": "VLT-PRO-CE36",
+      "name": "Fließbandarbeiter",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-CE36.json"
+    },
+    {
+      "id": "VLT-SCH-B64D",
+      "name": "Musikrezensent",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-B64D.json"
+    },
+    {
+      "id": "VLT-ECO-8C7E",
+      "name": "Lebensmittelgeschäftsleiter",
+      "category": "E-Commerce",
+      "file": "ECO/VLT-ECO-8C7E.json"
+    },
+    {
+      "id": "VLT-SCH-A4BF",
+      "name": "Liebesromanautor",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-A4BF.json"
+    },
+    {
+      "id": "VLT-MKT-BAAB",
+      "name": "Marktforscher",
+      "category": "Marketer",
+      "file": "MKT/VLT-MKT-BAAB.json"
+    },
+    {
+      "id": "VLT-ENT-FD9E",
+      "name": "Kleinunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-FD9E.json"
+    },
+    {
+      "id": "VLT-LEH-447F",
+      "name": "Geschichtsprofessor an der Universität",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-447F.json"
+    },
+    {
+      "id": "VLT-SCH-D291",
+      "name": "Lebensmittelkritiker und Kolumnist",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-D291.json"
+    },
+    {
+      "id": "VLT-ANA-9BA4",
+      "name": "Datenanalyst im Gesundheitswesen",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-9BA4.json"
+    },
+    {
+      "id": "VLT-ANA-24DF",
+      "name": "Sportdatenanalyst",
+      "category": "Analytiker",
+      "file": "ANA/VLT-ANA-24DF.json"
+    },
+    {
+      "id": "VLT-LEH-EDCF",
+      "name": "Grundschullehrer",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-EDCF.json"
+    },
+    {
+      "id": "VLT-LEH-B7ED",
+      "name": "Berufsberater",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-B7ED.json"
+    },
+    {
+      "id": "VLT-ENT-74DA",
+      "name": "Sozialunternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-74DA.json"
+    },
+    {
+      "id": "VLT-PRO-B42F",
+      "name": "Industrieelektriker",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-B42F.json"
+    },
+    {
+      "id": "VLT-PRO-BDB4",
+      "name": "Maschinenbediener",
+      "category": "Produzent",
+      "file": "PRO/VLT-PRO-BDB4.json"
+    },
+    {
+      "id": "VLT-DEV-7DF6",
+      "name": "IT-Projektmanager",
+      "category": "Entwickler",
+      "file": "DEV/VLT-DEV-7DF6.json"
+    },
+    {
+      "id": "VLT-ENT-0DB4",
+      "name": "BioTech-Unternehmer",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-0DB4.json"
+    },
+    {
+      "id": "VLT-LEH-EA3B",
+      "name": "ESL-Lehrer",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-EA3B.json"
+    },
+    {
+      "id": "VLT-GES-9E00",
+      "name": "Persönlicher Fitnesstrainer",
+      "category": "Gesundheitsexperten",
+      "file": "GES/VLT-GES-9E00.json"
+    },
+    {
+      "id": "VLT-SCH-370B",
+      "name": "Pharmazeutik-Autor",
+      "category": "Schriftsteller",
+      "file": "SCH/VLT-SCH-370B.json"
+    },
+    {
+      "id": "VLT-LEH-E294",
+      "name": "Sportlehrer",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-E294.json"
+    },
+    {
+      "id": "VLT-ENT-9B11",
+      "name": "Angel-Investor",
+      "category": "Entrepreneur",
+      "file": "ENT/VLT-ENT-9B11.json"
+    },
+    {
+      "id": "VLT-ETR-F3E5",
+      "name": "Schauspieler",
+      "category": "Entertainer",
+      "file": "ETR/VLT-ETR-F3E5.json"
+    },
+    {
+      "id": "VLT-LEH-566B",
+      "name": "Lehrcoach",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-566B.json"
+    },
+    {
+      "id": "VLT-LEH-FA07",
+      "name": "Sonderschullehrerin",
+      "category": "Lehrer",
+      "file": "LEH/VLT-LEH-FA07.json"
+    }
+  ]
+}
